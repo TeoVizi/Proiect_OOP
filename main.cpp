@@ -7,7 +7,6 @@ using namespace std;
 
 ofstream g("out.txt");
 
-
 class Departments {
 
     char** departments;
@@ -64,6 +63,40 @@ class Departments {
         numberOfDepartments++;
     }
 
+    void delete_element(char* elementToDelete)
+    {
+        int indexToDelete = -1;
+        for (int index=0; index < numberOfDepartments; index++)
+            if(strcmp(departments[index], elementToDelete) == 0 )
+            {
+                indexToDelete = index;
+                break;
+            }
+        
+        if(indexToDelete == -1)
+            {
+                g<< "Element not found in array"<<endl;
+            }
+            else {
+            delete[] departments[indexToDelete];
+            for (int index = indexToDelete; index<numberOfDepartments; index++)
+                departments[index] = departments[index+1];
+
+            char** newArr = new char*[numberOfDepartments-1];
+            for (int index=0; index < numberOfDepartments-1; index++)
+            {
+                int length = strlen(departments[index]);
+                newArr[index] = new char[length+1];
+                strcpy(newArr[index], departments[index]);
+            }
+            
+            departments = newArr;
+            numberOfDepartments--;
+            
+        }
+        
+    }
+
     void get_departments() 
     {
         for(int index=0; index < numberOfDepartments; index++)
@@ -73,7 +106,7 @@ class Departments {
     ~Departments()
     {
        for (int index = 0 ;index < numberOfDepartments ; index++)
-            delete departments[index];
+            delete[] departments[index];
         delete[] departments;
     }
 
@@ -84,7 +117,10 @@ int main()
     Departments d("departments.txt"), e;
     d.add_new_department("Diabetology");
     d.get_departments();
-    g<<d.get_number_of_departments();
+    d.delete_element("GeneralMedicine");
+    g<<d.get_number_of_departments()<<endl;
+    d.get_departments();
+
 
 
     return 0;

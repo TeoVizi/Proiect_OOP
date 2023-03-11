@@ -2,4 +2,7 @@ Oncology
 Cardiology
 GeneralMedicine
 Diabetology
-4
+3
+Oncology
+Cardiology
+Diabetology
