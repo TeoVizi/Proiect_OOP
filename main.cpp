@@ -14,7 +14,6 @@ class Departments {
     unsigned int numberOfDepartments;
 
     public:
-
     Departments()
     {
         departments = nullptr;
@@ -27,11 +26,10 @@ class Departments {
     
         numberOfDepartments = 0;
         char currentDepartment[100];
-        while (inputFile.getline(currentDepartment,100))
-        {
-            numberOfDepartments++;
-        }
 
+        while (inputFile.getline(currentDepartment,100))
+            numberOfDepartments++;
+        
         departments = new char*[numberOfDepartments];
 
         unsigned int index = 0;
@@ -53,26 +51,29 @@ class Departments {
     {
         return numberOfDepartments;
     }
-
+        
     void add_new_department(char newDepartment[100])
     {
-        g<<newDepartment;
-        char** newArr = new char*[numberOfDepartments+1];
-        memcpy(newArr, departments, numberOfDepartments*sizeof(char));
+        char** newArr = new char*[numberOfDepartments + 1];
+        memcpy(newArr, departments, numberOfDepartments * sizeof(char*));
         newArr[numberOfDepartments] = new char[strlen(newDepartment)];
         strcpy(newArr[numberOfDepartments], newDepartment);
-        delete[] departments;
+
+        departments = newArr;
         
         numberOfDepartments++;
-        for(int i=0; i<numberOfDepartments;i++)
-            g<<departments[i]<<endl;
+    }
 
+    void get_departments() 
+    {
+        for(int index=0; index < numberOfDepartments; index++)
+            g<<departments[index]<<endl;
     }
     
     ~Departments()
     {
-        // for (int i = 0; i< numberOfDepartments;i++)
-        //     g<<departments[i]<<endl;
+       for (int index = 0 ;index < numberOfDepartments ; index++)
+            delete departments[index];
         delete[] departments;
     }
 
@@ -81,7 +82,9 @@ class Departments {
 int main()
 {
     Departments d("departments.txt"), e;
-    d.add_new_department("diabetology");
+    d.add_new_department("Diabetology");
+    d.get_departments();
+    g<<d.get_number_of_departments();
 
 
     return 0;
