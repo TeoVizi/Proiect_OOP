@@ -49,6 +49,11 @@ class Departments {
         inputFile.close();
     }
 
+    unsigned int get_number_of_departments() 
+    {
+        return numberOfDepartments;
+    }
+    
     ~Departments()
     {
         delete[] departments;
