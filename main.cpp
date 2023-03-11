@@ -5,38 +5,48 @@
 
 using namespace std;
 
-ifstream f("departments.txt");
 ofstream g("out.txt");
 
 
 class Departments {
 
     char** departments;
-    unsigned int number_of_departments;
+    unsigned int numberOfDepartments;
 
     public:
-    Departments ()
+
+    Departments()
+    {
+        departments = nullptr;
+        numberOfDepartments = 0;
+    }
+
+    Departments (const char* fileName)
     {   
-        number_of_departments = 0;
+        ifstream inputFile(fileName);
+    
+        numberOfDepartments = 0;
         char currentDepartment[100];
-        while (f.getline(currentDepartment,100))
+        while (inputFile.getline(currentDepartment,100))
         {
-            number_of_departments++;
+            numberOfDepartments++;
         }
 
-        departments = new char*[number_of_departments];
+        departments = new char*[numberOfDepartments];
 
         unsigned int index = 0;
         
-        f.clear();
-        f.seekg(0, ios::beg);
+        inputFile.clear();
+        inputFile.seekg(0, ios::beg);
 
-        for (int index = 0; index < number_of_departments; index++) 
+        for (int index = 0; index < numberOfDepartments; index++) 
         {
-            f.getline(currentDepartment,100);
+            inputFile.getline(currentDepartment,100);
             departments[index] = new char[strlen(currentDepartment)];
             strcpy(departments[index], currentDepartment);
         }
+
+        inputFile.close();
     }
 
     ~Departments()
@@ -48,6 +58,6 @@ class Departments {
 
 int main()
 {
-    Departments d;
+    Departments d("departments.txt"), e;
     return 0;
 }
