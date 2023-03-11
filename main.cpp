@@ -53,9 +53,26 @@ class Departments {
     {
         return numberOfDepartments;
     }
+
+    void add_new_department(char newDepartment[100])
+    {
+        g<<newDepartment;
+        char** newArr = new char*[numberOfDepartments+1];
+        memcpy(newArr, departments, numberOfDepartments*sizeof(char));
+        newArr[numberOfDepartments] = new char[strlen(newDepartment)];
+        strcpy(newArr[numberOfDepartments], newDepartment);
+        delete[] departments;
+        
+        numberOfDepartments++;
+        for(int i=0; i<numberOfDepartments;i++)
+            g<<departments[i]<<endl;
+
+    }
     
     ~Departments()
     {
+        // for (int i = 0; i< numberOfDepartments;i++)
+        //     g<<departments[i]<<endl;
         delete[] departments;
     }
 
@@ -64,5 +81,8 @@ class Departments {
 int main()
 {
     Departments d("departments.txt"), e;
+    d.add_new_department("diabetology");
+
+
     return 0;
 }
