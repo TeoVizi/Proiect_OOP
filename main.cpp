@@ -63,7 +63,7 @@ class Departments {
         numberOfDepartments++;
     }
 
-    void delete_element(char* elementToDelete)
+    void delete_department(char* elementToDelete)
     {
         int indexToDelete = -1;
         for (int index=0; index < numberOfDepartments; index++)
@@ -117,7 +117,7 @@ int main()
     Departments d("departments.txt"), e;
     d.add_new_department("Diabetology");
     d.get_departments();
-    d.delete_element("GeneralMedicine");
+    d.delete_department("GeneralMedicine");
     g<<d.get_number_of_departments()<<endl;
     d.get_departments();
 
