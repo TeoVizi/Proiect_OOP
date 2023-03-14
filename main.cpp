@@ -6,7 +6,7 @@
 
 using namespace std;
 
-ofstream g("out.txt");
+ofstream g("out.txt", ios::out);
 
 class UtilityReadFromFile {
 
@@ -60,6 +60,10 @@ class UtilityReadFromFile {
 };
 
 
+
+
+
+
 class Departments {
 
     char** departments;
@@ -71,6 +75,7 @@ class Departments {
         departments = nullptr;
         numberOfDepartments = 0;
     }
+
 
 
     Departments (UtilityReadFromFile read)
@@ -89,6 +94,7 @@ class Departments {
     }
 
 
+
     unsigned int get_number_of_departments() 
     {
         return numberOfDepartments;
@@ -105,6 +111,7 @@ class Departments {
         
         numberOfDepartments++;
     }
+
 
 
     void delete_department(char* elementToDelete)
@@ -141,20 +148,26 @@ class Departments {
     }
 
 
+
     friend ostream & operator<< (ostream &os, const Departments &Array)
     {
-        ofstream output("out.txt");
+        ofstream output("out.txt", ios::out);
         if (output.is_open()) 
-        {
+        {   
+            output.clear();
+            output.seekp(0, ios::end);
+
             for(int index = 0; index < Array.numberOfDepartments; index++)
-                output << Array.departments[index] << '\n';
+                os << Array.departments[index] << endl;
         }
         
-        output.seekp(0, ios::end);
+        os << endl;
 
-        output << endl;
-        output.close();
-        
+         output.close();
+
+         output.clear();
+         output.seekp(0, ios::end);
+
         return os;
     }
 
@@ -171,8 +184,9 @@ class Departments {
 int main()
 {
     Departments d(UtilityReadFromFile ("departments.txt"));
-    g << d.get_number_of_departments();
-    g << d;
+
+    g<< d.get_number_of_departments();
+    g<< d;
     g << d.get_number_of_departments();
     return 0;
 }
