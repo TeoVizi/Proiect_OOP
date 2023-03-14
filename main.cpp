@@ -61,9 +61,6 @@ class UtilityReadFromFile {
 
 
 
-
-
-
 class Departments {
 
     char** departments;
@@ -151,25 +148,12 @@ class Departments {
 
     friend ostream & operator<< (ostream &os, const Departments &Array)
     {
-        ofstream output("out.txt", ios::out);
-        if (output.is_open()) 
-        {   
-            output.clear();
-            output.seekp(0, ios::end);
-
             for(int index = 0; index < Array.numberOfDepartments; index++)
                 os << Array.departments[index] << endl;
-        }
-        
-        os << endl;
-
-         output.close();
-
-         output.clear();
-         output.seekp(0, ios::end);
 
         return os;
     }
+
 
 
     ~Departments()
