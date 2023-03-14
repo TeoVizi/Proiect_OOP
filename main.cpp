@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 #include <fstream>
 #include <cstring>
 #include <new>
@@ -6,6 +7,58 @@
 using namespace std;
 
 ofstream g("out.txt");
+
+class UtilityReadFromFile {
+
+    char** Array;
+    unsigned int length;
+
+    public:
+    UtilityReadFromFile(const char* fileName)
+    {
+        ifstream inputFile(fileName);
+
+        length = 0;
+        char currentElemnent[100];
+
+        while (inputFile.getline(currentElemnent,100))
+            length++;
+
+        Array = new char*[length];
+
+        unsigned int index = 0;
+
+        inputFile.clear();
+        inputFile.seekg(0, ios::beg);
+
+        for (int index = 0; index < length; index++) 
+        {
+            inputFile.getline(currentElemnent,100);
+            Array[index] = new char[strlen(currentElemnent)];
+            strcpy(Array[index], currentElemnent);
+        }
+
+        inputFile.close();
+
+    }
+
+    char** get_array() {
+        return Array;
+    }
+
+    unsigned int get_length() {
+        return length;
+    }
+
+    ~UtilityReadFromFile()
+    {
+       for (int index = 0 ;index < length ; index++)
+            delete[] Array[index];
+        delete[] Array;
+    }
+
+};
+
 
 class Departments {
 
@@ -19,39 +72,29 @@ class Departments {
         numberOfDepartments = 0;
     }
 
-    Departments (const char* fileName)
-    {   
-        ifstream inputFile(fileName);
-    
-        numberOfDepartments = 0;
-        char currentDepartment[100];
 
-        while (inputFile.getline(currentDepartment,100))
-            numberOfDepartments++;
+    Departments (UtilityReadFromFile read)
+    {   
         
+        numberOfDepartments = read.get_length();
         departments = new char*[numberOfDepartments];
 
         unsigned int index = 0;
-        
-        inputFile.clear();
-        inputFile.seekg(0, ios::beg);
-
-        for (int index = 0; index < numberOfDepartments; index++) 
+        for(index = 0; index < numberOfDepartments; index++)
         {
-            inputFile.getline(currentDepartment,100);
-            departments[index] = new char[strlen(currentDepartment)];
-            strcpy(departments[index], currentDepartment);
+             this->departments[index] = new char[strlen(read.get_array()[index])];
+            strcpy(this->departments[index], read.get_array()[index]);
         }
 
-        inputFile.close();
     }
+
 
     unsigned int get_number_of_departments() 
     {
         return numberOfDepartments;
     }
         
-    void add_new_department(char newDepartment[100])
+    void set_new_department(char newDepartment[100])
     {
         char** newArr = new char*[numberOfDepartments + 1];
         memcpy(newArr, departments, numberOfDepartments * sizeof(char*));
@@ -62,6 +105,7 @@ class Departments {
         
         numberOfDepartments++;
     }
+
 
     void delete_department(char* elementToDelete)
     {
@@ -75,7 +119,7 @@ class Departments {
         
         if(indexToDelete == -1)
             {
-                g<< "Element not found in array"<<endl;
+                g<< "Element not found in departments."<<endl;
             }
             else {
             delete[] departments[indexToDelete];
@@ -94,34 +138,41 @@ class Departments {
             numberOfDepartments--;
             
         }
-        
     }
 
-    void get_departments() 
+
+    friend ostream & operator<< (ostream &os, const Departments &Array)
     {
-        for(int index=0; index < numberOfDepartments; index++)
-            g<<departments[index]<<endl;
+        ofstream output("out.txt");
+        if (output.is_open()) 
+        {
+            for(int index = 0; index < Array.numberOfDepartments; index++)
+                output << Array.departments[index] << '\n';
+        }
+        
+        output.seekp(0, ios::end);
+
+        output << endl;
+        output.close();
+        
+        return os;
     }
-    
+
+
     ~Departments()
     {
        for (int index = 0 ;index < numberOfDepartments ; index++)
             delete[] departments[index];
-        delete[] departments;
+       delete[] departments;
     }
 
 };
 
 int main()
 {
-    Departments d("departments.txt"), e;
-    d.add_new_department("Diabetology");
-    d.get_departments();
-    d.delete_department("GeneralMedicine");
-    g<<d.get_number_of_departments()<<endl;
-    d.get_departments();
-
-
-
+    Departments d(UtilityReadFromFile ("departments.txt"));
+    g << d.get_number_of_departments();
+    g << d;
+    g << d.get_number_of_departments();
     return 0;
 }

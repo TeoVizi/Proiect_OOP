@@ -1,8 +1,6 @@
-Oncology
+3
+3
+logy
 Cardiology
 GeneralMedicine
-Diabetology
-3
-Oncology
-Cardiology
-Diabetology
+
