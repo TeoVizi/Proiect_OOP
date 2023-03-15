@@ -1,4 +1,9 @@
-3Oncology
+FUNCTIONALITY FOR CLASS DEPARTMENTS:
+Write Departments in file:
+
+Oncology
+General
 Cardiology
-GeneralMedicine
-3
+Surgery
+
+Get number of departments: 4

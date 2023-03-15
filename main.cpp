@@ -8,6 +8,8 @@ using namespace std;
 
 ofstream g("out.txt", ios::out);
 
+
+
 class UtilityReadFromFile {
 
     char** Array;
@@ -74,7 +76,6 @@ class Departments {
     }
 
 
-
     Departments (UtilityReadFromFile read)
     {   
         
@@ -91,25 +92,27 @@ class Departments {
     }
 
 
-
     unsigned int get_number_of_departments() 
     {
         return numberOfDepartments;
     }
         
-    void set_new_department(char newDepartment[100])
+    void set_new_department(char* newDepartment)
     {
         char** newArr = new char*[numberOfDepartments + 1];
         memcpy(newArr, departments, numberOfDepartments * sizeof(char*));
-        newArr[numberOfDepartments] = new char[strlen(newDepartment)];
+        newArr[numberOfDepartments] = new char[strlen(newDepartment)+1];
         strcpy(newArr[numberOfDepartments], newDepartment);
+
+        for(int index = 0; index < numberOfDepartments; index++)
+            delete[] departments[index];
+        
+        delete[] departments;
 
         departments = newArr;
         
         numberOfDepartments++;
     }
-
-
 
     void delete_department(char* elementToDelete)
     {
@@ -145,7 +148,6 @@ class Departments {
     }
 
 
-
     friend ostream & operator<< (ostream &os, const Departments &Array)
     {
             for(int index = 0; index < Array.numberOfDepartments; index++)
@@ -153,8 +155,7 @@ class Departments {
 
         return os;
     }
-
-
+   
 
     ~Departments()
     {
@@ -165,12 +166,125 @@ class Departments {
 
 };
 
+
+
+class Birthday 
+{
+
+    unsigned int day, month, year;
+
+    public:
+    Birthday(unsigned int day, unsigned int month, unsigned int year)
+    {
+        this->day = day;
+        this->month = month;
+        this->year = year;
+    }
+};
+
+
+
+class Address
+{
+    char street[30];
+    unsigned int number;
+
+    public:
+    Address(char street[30], unsigned int number)
+    {
+        strcpy(this->street, street);
+        this->number = number;
+    }
+};
+
+
+
+class Vets {
+
+    char** vets;
+    unsigned int numberOfVets;
+    char departmentForVet[50][100];
+    char birthdayForVet[50][20];
+    char addressForVet[50][100];
+
+    public:
+    Vets()
+    {
+        vets = nullptr;
+        numberOfVets = 0;
+    }
+
+    Vets(UtilityReadFromFile read)
+    {
+       numberOfVets = read.get_length();
+        vets = new char*[numberOfVets];
+
+        unsigned int index = 0;
+        for(index = 0; index < numberOfVets; index++)
+        {
+             this->vets[index] = new char[strlen(read.get_array()[index])];
+            strcpy(this->vets[index], read.get_array()[index]);
+        }
+    }
+
+      friend ostream & operator<< (ostream &os, const Vets &Array)
+    {
+            for(int index = 0; index < Array.numberOfVets; index++)
+                os << Array.vets[index] << endl;
+
+        return os;
+    }
+
+    unsigned int get_number_of_vets()
+    {
+        return numberOfVets;
+    }
+
+    void set_department_for_vet(const char vetFullName, char departmentName)
+    {
+        int saveIndex = -1;
+
+        for (int index = 0 ; index < numberOfVets; index++)
+            if(strcmp(vetFullName, vets[index]) == 0)
+            {
+                saveIndex = index;
+            }
+            else {
+                strcpy(departmentForVet[index], "/");
+            }
+
+    }
+
+    ~Vets()
+    {
+        for (int index = 0; index < numberOfVets; index++)
+            delete[] vets[index];
+        delete[] vets;
+    }
+
+};
+
+
+
 int main()
 {
     Departments d(UtilityReadFromFile ("departments.txt"));
 
-    g<< d.get_number_of_departments();
-    g<< d;
-    g << d.get_number_of_departments();
+    g<<"FUNCTIONALITY FOR CLASS DEPARTMENTS:"<<endl;
+    g<<"Write Departments in file:"<<endl;
+    g<<endl;
+    g<<d;
+    g<<endl;
+    g<<"Get number of departments: ";
+    g << d.get_number_of_departments()<<endl;
+    d.set_new_department("Neurology"); // adding a new department
+    g<<d;
+
+
+
+    Vets m(UtilityReadFromFile ("doctors.txt"));
+    g<<endl<<endl;
+    g<<m;
+    g<<m.get_number_of_vets();
     return 0;
 }
