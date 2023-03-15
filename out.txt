@@ -1,9 +1,36 @@
 FUNCTIONALITY FOR CLASS DEPARTMENTS:
-Write Departments in file:
-
+Departments read from file:
 Oncology
 General
 Cardiology
 Surgery
 
 Get number of departments: 4
+
+Departments after adding a new one:
+Oncology
+General
+Cardiology
+Surgery
+Neurology
+
+Get departments after addition: 5
+
+Delete a department:
+Delete another department:
+
+Try to delete an non-existent department: 
+Element not found in departments.
+
+General
+Surgery
+Neurology
+
+Number of departments after deletion: 3
+
+General
+Surgery
+Neurology
+
+
+0

@@ -97,17 +97,12 @@ class Departments {
         return numberOfDepartments;
     }
         
-    void set_new_department(char* newDepartment)
+    void set_new_department(const char* newDepartment)
     {
         char** newArr = new char*[numberOfDepartments + 1];
         memcpy(newArr, departments, numberOfDepartments * sizeof(char*));
         newArr[numberOfDepartments] = new char[strlen(newDepartment)+1];
         strcpy(newArr[numberOfDepartments], newDepartment);
-
-        for(int index = 0; index < numberOfDepartments; index++)
-            delete[] departments[index];
-        
-        delete[] departments;
 
         departments = newArr;
         
@@ -240,20 +235,20 @@ class Vets {
         return numberOfVets;
     }
 
-    void set_department_for_vet(const char vetFullName, char departmentName)
-    {
-        int saveIndex = -1;
+    // void set_department_for_vet(const char vetFullName, char departmentName)
+    // {
+    //     int saveIndex = -1;
 
-        for (int index = 0 ; index < numberOfVets; index++)
-            if(strcmp(vetFullName, vets[index]) == 0)
-            {
-                saveIndex = index;
-            }
-            else {
-                strcpy(departmentForVet[index], "/");
-            }
+    //     for (int index = 0 ; index < numberOfVets; index++)
+    //         if(strcmp(vetFullName, vets[index]) == 0)
+    //         {
+    //             saveIndex = index;
+    //         }
+    //         else {
+    //             strcpy(departmentForVet[index], "/");
+    //         }
 
-    }
+    // }
 
     ~Vets()
     {
@@ -271,13 +266,32 @@ int main()
     Departments d(UtilityReadFromFile ("departments.txt"));
 
     g<<"FUNCTIONALITY FOR CLASS DEPARTMENTS:"<<endl;
-    g<<"Write Departments in file:"<<endl;
-    g<<endl;
+    g<<"Departments read from file:"<<endl;
     g<<d;
     g<<endl;
     g<<"Get number of departments: ";
     g << d.get_number_of_departments()<<endl;
     d.set_new_department("Neurology"); // adding a new department
+    g<<endl;
+    g<<"Departments after adding a new one:"<<endl;
+    g<<d;
+    g<<endl;
+    g<<"Get departments after addition: ";
+    g<<d.get_number_of_departments()<<endl;
+    g<<endl;
+    g<<"Delete a department:"<<endl;
+    d.delete_department("Oncology");
+    g<<"Delete another department:"<<endl;
+    d.delete_department("Cardiology");
+    g<<endl;
+    g<<"Try to delete an non-existent department: "<<endl;
+    d.delete_department("Oncology");
+    g<<endl;
+    g<<d;
+    g<<endl;
+    g<<"Number of departments after deletion: ";
+    g<<d.get_number_of_departments()<<endl;
+    g<<endl;
     g<<d;
 
 
