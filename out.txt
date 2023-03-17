@@ -32,7 +32,6 @@ General
 Surgery
 Neurology
 
-Vets read from file:
 Cornel Sorin
 Maria Cornelia
 Ioana Popescu
@@ -42,16 +41,16 @@ Number of vets:
 4
 
 Try to assign a department to a non-existent vet
-Invalid department
+Invalid vet
 
 Try to assing a non-existent department to a vet
 Invalid department
 
 Assign a department to a vet
-Invalid department
+
 
 Get the department a vet works in:
-/
+Neurology
 Invalid vet
 /
 

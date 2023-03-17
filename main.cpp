@@ -174,9 +174,9 @@ class Birthday
 
     public:
     Birthday() {
-        this->day = day;
-        this->month = month;
-        this->year = year;
+        this->day = 0;
+        this->month = 0;
+        this->year = 0;
     }
     Birthday(unsigned int day, unsigned int month, unsigned int year)
     {
@@ -237,7 +237,7 @@ class Vets {
             strcpy(departmentForVet[index], "/");
         }
 
-        for(int index = 0; index < 100; index++)
+        for(int index = 0; index < 50; index++)
         {
             birthForVet[index] = Birthday(0,0,0);
         }
@@ -336,7 +336,7 @@ class Vets {
                 saveIndex = index;
                 break;
             }
-        }
+         }
 
         if (saveIndex != 1)
         {
@@ -379,7 +379,8 @@ class Vets {
 
 int main()
 {
-    Departments d(UtilityReadFromFile ("departments.txt"));
+    UtilityReadFromFile read("departments.txt");
+    Departments d(read);
 
     g<<"FUNCTIONALITY FOR CLASS DEPARTMENTS:"<<endl;
     g<<"Departments read from file:"<<endl;
