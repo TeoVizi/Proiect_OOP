@@ -52,13 +52,6 @@ class UtilityReadFromFile {
         return length;
     }
 
-    ~UtilityReadFromFile()
-    {
-       for (int index = 0 ;index < length ; index++)
-            delete[] Array[index];
-        delete[] Array;
-    }
-
 };
 
 
@@ -158,9 +151,13 @@ class Departments {
 
     ~Departments()
     {
-       for (int index = 0 ;index < numberOfDepartments ; index++)
-            delete[] departments[index];
-       delete[] departments;
+        if (departments!=nullptr)
+        {
+            for (int index = 0 ;index < numberOfDepartments ; index++)
+                delete[] departments[index];
+            delete[] departments;
+        }
+       
     }
 
 };
@@ -211,13 +208,14 @@ class Vets {
     unsigned int numberOfVets;
     char departmentForVet[50][100];
     Birthday birthForVet[50];
+    unsigned int netSalary[50];
 
     public:
     Vets()
     {
         vets = nullptr;
         numberOfVets = 0;
-        strcpy(departmentForVet[0],NULL);
+        
     }
 
     Vets(UtilityReadFromFile read)
@@ -241,6 +239,10 @@ class Vets {
         {
             birthForVet[index] = Birthday(0,0,0);
         }
+
+        for(index = 0; index < 50; index++)
+            netSalary[index] = 3000;
+       
     }
 
       friend ostream & operator<< (ostream &os, const Vets &Array)
@@ -254,36 +256,6 @@ class Vets {
     unsigned int get_number_of_vets()
     {
         return numberOfVets;
-    }
-
-    void set_department_for_vet(char vetFullName[], char departmentName[], char** validDepartments, unsigned int numberOfValidDepartments)
-    {
-        int saveIndex = -1;
-        bool validDepartment = 0;
-
-        for(int index = 0; index < numberOfValidDepartments; index++)
-        {
-            if (strcmp(departmentName, validDepartments[index]) == 0)
-                validDepartment = 1;
-        }
-
-        if (validDepartment == 0)
-            g << "Invalid department";
-        else {
-
-            for (int index = 0 ; index < numberOfVets; index++)
-            if(strcmp(vetFullName, vets[index]) == 0)
-            {
-                saveIndex = index;
-            }
-
-            if (saveIndex != -1)
-            {
-                strcpy(departmentForVet[saveIndex], departmentName);
-            }
-            else g<<"Invalid vet";
-
-        }
     }
 
     void set_birthday_for_vet (char vetFullName[], Birthday birth)
@@ -323,7 +295,6 @@ class Vets {
         {
             return birthForVet[saveIndex];
         } 
-
     }
 
     void delete_vet(char vetFullName[])
@@ -338,7 +309,7 @@ class Vets {
             }
          }
 
-        if (saveIndex != 1)
+        if (saveIndex != -1)
         {
             delete[] vets[saveIndex];
 
@@ -356,6 +327,51 @@ class Vets {
         else g<<"Invalid vet";
     }
 
+    void set_new_vet(const char* newVet)
+    {
+        char** newArr = new char*[numberOfVets + 1];
+        memcpy(newArr, vets, numberOfVets * sizeof(char*));
+        newArr[numberOfVets] = new char[strlen(newVet)+1];
+        strcpy(newArr[numberOfVets], newVet);
+
+        vets = newArr;
+        
+        numberOfVets++;
+    }
+
+       void set_department_for_vet(char vetFullName[], char departmentName[], char** validDepartments, unsigned int numberOfValidDepartments)
+    {
+        int saveIndex = -1;
+        bool validDepartment = 0;
+
+        for(int index = 0; index < numberOfValidDepartments; index++)
+        {
+            if (strcmp(departmentName, validDepartments[index]) == 0)
+               { 
+                validDepartment = 1;
+                break;
+               }
+        }
+
+        if (validDepartment == 0)
+            g << "Invalid department";
+        else {
+
+            for (int index = 0 ; index < numberOfVets; index++)
+            if(strcmp(vetFullName, vets[index]) == 0)
+            {
+                saveIndex = index;
+            }
+
+            if (saveIndex != -1)
+            {
+                strcpy(departmentForVet[saveIndex], departmentName);
+            }
+            else g<<"Invalid vet";
+
+        }
+    }
+
     char* get_department_for_vet(char vetFullName[])
     {
         for(int index = 0; index < numberOfVets; index++)
@@ -366,21 +382,317 @@ class Vets {
         return "Invalid vet";
     }
 
+    void set_netSalary(char vetFullName[], unsigned int salary)
+    {
+        int saveIndex = -1;
+        for(int index = 0; index < numberOfVets; index++)
+        {
+            if(strcmp(vetFullName, vets[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+         }
+
+        if (saveIndex != -1)
+        {
+            if (salary < 3000)
+                g<<"Invalid salary value. Must be over 3000";
+            else
+            {
+                netSalary[saveIndex] = salary;
+            }
+        }
+        else g<<"Invalid vet";
+    }
+
+    unsigned int get_netSalary(char vetFullName[])
+    {
+        int saveIndex = -1;
+        for(int index = 0; index < numberOfVets; index++)
+        {
+            if(strcmp(vetFullName, vets[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+         }
+
+        if (saveIndex != -1)
+        {
+            return netSalary[saveIndex];
+        }
+        return -1;
+    }
+
+    float get_hourly_salary(char vetFullName[])
+    {
+        int saveIndex = -1;
+        for(int index = 0; index < numberOfVets; index++)
+        {
+            if(strcmp(vetFullName, vets[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+         }
+
+        if (saveIndex != -1)
+        {
+            return float(netSalary[saveIndex])/160;
+        }
+        else return -1;
+    }
+
+    unsigned int get_anual_salary(char vetFullName[])
+    {
+        int saveIndex = -1;
+        for(int index = 0; index < numberOfVets; index++)
+        {
+            if(strcmp(vetFullName, vets[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+         }
+
+        if (saveIndex != -1)
+        {
+            return netSalary[saveIndex]*12;
+        }
+        else return -1;
+    }
+
+    void get_full_vet_info(char vetFullName[])
+    {
+         int saveIndex = -1;
+        for(int index = 0; index < numberOfVets; index++)
+        {
+            if(strcmp(vetFullName, vets[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+         }
+
+        if (saveIndex != -1)
+        {
+            g<<vets[saveIndex]<<endl<<departmentForVet[saveIndex]<<endl<<birthForVet[saveIndex]<<netSalary[saveIndex];
+        }
+        else g<<"Invalid vet name";
+    }
+
     ~Vets()
     {
         for (int index = 0; index < numberOfVets; index++)
             delete[] vets[index];
         delete[] vets;
     }
-
 };
 
+class PetOwners {
 
+    char** petOwners;
+    int numberOfPetOwners;
+    Birthday birthOfPetOwner[200];
+    bool isMember[200];
+
+    public: 
+
+    PetOwners()
+    {
+        petOwners = nullptr;
+        numberOfPetOwners = 0;
+    }
+    
+    PetOwners(UtilityReadFromFile read)
+    {
+        numberOfPetOwners = read.get_length();
+        petOwners = new char*[numberOfPetOwners];
+
+        unsigned int index = 0;
+        for(index = 0; index < numberOfPetOwners; index++)
+        {
+             this->petOwners[index] = new char[strlen(read.get_array()[index])];
+            strcpy(this->petOwners[index], read.get_array()[index]);
+        }
+
+        for (int index = 0; index < 200; index++)
+            birthOfPetOwner[index] = Birthday(0,0,0); 
+    
+
+        for (int index = 0; index < 200; index++)
+            isMember[index] = 0;
+    }
+
+
+    friend ostream & operator<< (ostream &os, const PetOwners &Array)
+    {
+            for(int index = 0; index < Array.numberOfPetOwners; index++)
+                os << Array.petOwners[index] << endl;
+
+        return os;
+    }
+   
+
+   unsigned int get_number_of_pet_owners()
+   {
+        return numberOfPetOwners;
+   }
+
+    void set_new_petOwner(const char* newPetOwner)
+    {
+        char** newArr = new char*[numberOfPetOwners + 1];
+        memcpy(newArr, petOwners, numberOfPetOwners * sizeof(char*));
+        newArr[numberOfPetOwners] = new char[strlen(newPetOwner)+1];
+        strcpy(newArr[numberOfPetOwners], newPetOwner);
+
+        petOwners = newArr;
+        
+        numberOfPetOwners++;
+    }
+
+
+       void delete_petOwner(char FullName[])
+    {
+        int saveIndex = -1;
+        for(int index = 0; index < numberOfPetOwners; index++)
+        {
+            if(strcmp(FullName, petOwners[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+         }
+
+        if (saveIndex != -1)
+        {
+            delete[] petOwners[saveIndex];
+
+            for(int index = saveIndex; index < numberOfPetOwners - 1; index++)
+                petOwners[index] = petOwners[index+1];
+                
+            for(int index = saveIndex; index < numberOfPetOwners - 1; index++)
+                 birthOfPetOwner[index] = birthOfPetOwner[index+1];
+
+            --numberOfPetOwners;
+        }
+        else g<<"Invalid owner name.";
+    }
+
+     void set_birthday_for_petOwner(char FullName[], Birthday birth)
+    {
+        bool validName = 0;
+        unsigned int saveIndex = -1;
+        for (int index = 0; index < numberOfPetOwners; index++)
+        {
+            if (strcmp(FullName, petOwners[index]) == 0)
+            {
+                validName = 1;
+                saveIndex = index;
+            }
+        }
+
+        if (saveIndex != -1)
+        {
+            birthOfPetOwner[saveIndex] = birth;
+        } 
+        else g<<"Invalid vet";
+    }
+
+    Birthday get_birthday_for_perOwner(char FullName[]) {
+        bool validName = 0;
+        unsigned int saveIndex = -1;
+
+        for (int index = 0; index < numberOfPetOwners; index++)
+        {
+            if (strcmp(FullName, petOwners[index]) == 0)
+            {
+                validName = 1;
+                saveIndex = index;
+            }
+        }
+
+         if (saveIndex != -1)
+        {
+            return birthOfPetOwner[saveIndex];
+        } 
+    }
+
+    void set_isMember(char FullName[])
+    {
+         unsigned int saveIndex = -1;
+
+        for (int index = 0; index < numberOfPetOwners; index++)
+        {
+            if (strcmp(FullName, petOwners[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+        }
+        if (saveIndex != -1)
+        {
+            isMember[saveIndex] = 1;
+        }
+    }
+
+    bool get_isMember(char FullName[])
+    {
+         unsigned int saveIndex = -1;
+
+        for (int index = 0; index < numberOfPetOwners; index++)
+        {
+            if (strcmp(FullName, petOwners[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+        }
+        if (saveIndex != -1)
+        {
+            return isMember[saveIndex];
+        }
+    }
+
+    float apply_discount15_if_isMember(char FullName[], unsigned int procedurePrice)
+    {
+        unsigned int saveIndex = -1;
+
+        for (int index = 0; index < numberOfPetOwners; index++)
+        {
+            if (strcmp(FullName, petOwners[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+        }
+        if (saveIndex != -1)
+        {
+            if (isMember[saveIndex] == 1)
+            {
+                return float(0.75 * procedurePrice);
+            }
+        }
+
+    }
+
+    ~PetOwners()
+    {
+        if(petOwners != nullptr)
+        {
+            for(int index = 0; index < numberOfPetOwners; index++)
+                delete[] petOwners[index];
+            delete[] petOwners;
+        }
+    }
+
+};
 
 int main()
 {
     UtilityReadFromFile read("departments.txt");
-    Departments d(read);
+    Departments d(read), f;
 
     g<<"FUNCTIONALITY FOR CLASS DEPARTMENTS:"<<endl;
     g<<"Departments read from file:"<<endl;
@@ -411,9 +723,14 @@ int main()
     g<<endl;
     g<<d;
     g<<endl;
+    g<<"Add department to an empty departments array:"<<endl;
+    f.set_new_department("Diabetology");
+    g<<f.get_number_of_departments()<<endl;
+    g<<f;
+    g<<endl<<endl;
 
 
-    Vets m(UtilityReadFromFile ("vets.txt"));
+    Vets m(UtilityReadFromFile ("vets.txt")),n;
     g<<"Vets read from file:"<<endl;
     g<<m<<endl;
     g<<"Number of vets:"<<endl;
@@ -436,13 +753,59 @@ int main()
     g<<"Setting birthday for vet";
     m.set_birthday_for_vet("Marian Ivascu", Birthday(19,6,1989));
     g<<endl;
-    m.set_birthday_for_vet("Marian Ivasc", Birthday(19,6,1989));
+    m.set_birthday_for_vet("Ioana Popescu", Birthday(19,6,1989));
     g<<endl;
     g<<"Get birthday for vet: ";
-    g<<m.get_birthday_for_vet("Marian Ivascu");
+    g<<m.get_birthday_for_vet("Ioana Popescu");
     g<<endl<<endl;
     m.delete_vet("Marian Ivascu");
     g<<m;
+    g<<endl;
+    g<<"Add new vet:"<<endl;
+    m.set_new_vet("Ion Constantin");
+    g<<m;
+    g<<endl;
+    g<<"Add new vet to empty vets array:"<<endl;
+    n.set_new_vet("Ionel Cornel");
+    g<<n;
+    n.set_department_for_vet("Ionel Cornel", "Neurology", d.get_pointer_to_departments(), d.get_number_of_departments());
+    g<<n.get_department_for_vet("Ionel Cornel");
+    n.set_birthday_for_vet("Ionel Cornel", Birthday(2,3,1967));
+    g<<endl;
+    g<<n.get_birthday_for_vet("Ionel Cornel");
+    g<<endl;
+    g<<"Set and get salary for a vet"<<endl;
+    m.set_netSalary("Ioana Popescu", 3500);
+    g<<m.get_netSalary("Ioana Popescu")<<endl;
+    g<<"Get hourly salary:"<<endl;
+    g<<m.get_hourly_salary("Ioana Popescu")<<endl;
+    g<<"Get annual salary:"<<endl;
+    g<<m.get_anual_salary("Ioana Popescu")<<endl;
+    g<<"Get full vet info:"<<endl;
+    g<<endl;
+    m.get_full_vet_info("Ioana Popescu");
+
+    g<<endl<<endl;
+
+    PetOwners p(UtilityReadFromFile ("pet_owners.txt"));
+    g<<p;
+    g<<p.get_number_of_pet_owners()<<endl;
+    g<<endl;
+    p.set_new_petOwner("Maria Lefter");
+    g<<p;
+    g<<p.get_number_of_pet_owners()<<endl;
+    p.delete_petOwner("Maria Lefter");
+    g<<endl;
+    p.set_new_petOwner("Maria Lefter");
+    p.set_birthday_for_petOwner("Maria Lefter", Birthday(3,4,1978));
+    g<<p.get_birthday_for_perOwner("Maria Lefter");
+    g<<p<<endl;
+    p.set_isMember("Maria Lefter");
+    g<<p.get_isMember("Maria Lefter");
+    g<<endl;
+    g<<p.apply_discount15_if_isMember("Maria Lefter", 100);
+
+
 
     return 0;
 }

@@ -32,6 +32,12 @@ General
 Surgery
 Neurology
 
+Add department to an empty departments array:
+1
+Diabetology
+
+
+Vets read from file:
 Cornel Sorin
 Maria Cornelia
 Ioana Popescu
@@ -55,10 +61,54 @@ Invalid vet
 /
 
 Setting birthday for vet
-Invalid vet
+
 Get birthday for vet: 19/6/1989
 
 
 Cornel Sorin
 Maria Cornelia
 Ioana Popescu
+
+Add new vet:
+Cornel Sorin
+Maria Cornelia
+Ioana Popescu
+Ion Constantin
+
+Add new vet to empty vets array:
+Ionel Cornel
+Neurology
+2/3/1967
+
+Set and get salary for a vet
+3500
+Get hourly salary:
+21.875
+Get annual salary:
+42000
+Get full vet info:
+
+Ioana Popescu
+/
+19/6/1989
+3500
+
+Marcela Ionescu
+Vasile Constantin
+Costelus Costel
+3
+
+Marcela Ionescu
+Vasile Constantin
+Costelus Costel
+Maria Lefter
+4
+
+3/4/1978
+Marcela Ionescu
+Vasile Constantin
+Costelus Costel
+Maria Lefter
+
+1
+75
