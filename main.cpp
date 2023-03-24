@@ -503,6 +503,12 @@ class PetOwners {
     {
         petOwners = nullptr;
         numberOfPetOwners = 0;
+
+        for (int index = 0; index < 200; index++)
+            birthOfPetOwner[index] = Birthday(NULL,NULL,NULL); 
+
+        for (int index = 0; index < 200; index++)
+            isMember[index] = NULL;
     }
     
     PetOwners(UtilityReadFromFile read)
@@ -637,7 +643,7 @@ class PetOwners {
         }
     }
 
-    bool get_isMember(char FullName[])
+    int get_isMember(char FullName[])
     {
          unsigned int saveIndex = -1;
 
@@ -653,6 +659,7 @@ class PetOwners {
         {
             return isMember[saveIndex];
         }
+        else return (-1);
     }
 
     float apply_discount15_if_isMember(char FullName[], unsigned int procedurePrice)
@@ -673,7 +680,9 @@ class PetOwners {
             {
                 return float(0.75 * procedurePrice);
             }
+            else return procedurePrice;
         }
+        else return -1;
 
     }
 
@@ -687,6 +696,75 @@ class PetOwners {
         }
     }
 
+};
+
+class Pets {
+
+    char** petNames;
+    unsigned int numberOfPets;
+    char species[500][30];
+
+    public:
+    Pets()
+    {
+        petNames = nullptr;
+        numberOfPets = 0;
+
+        for (int index = 0; index < 500; index++)
+            species[index][0] = NULL;
+    }
+
+    Pets(UtilityReadFromFile read)
+    {
+        numberOfPets = read.get_length();
+        petNames = new char*[numberOfPets];
+
+        unsigned int index = 0;
+        for(index = 0; index < numberOfPets; index++)
+        {
+            this->petNames[index] = new char[strlen(read.get_array()[index])];
+            strcpy(this->petNames[index], read.get_array()[index]);
+        }
+
+        for (int index = 0; index < 500; index++)
+            strcpy(species[index], "/");
+
+    }
+
+      friend ostream & operator<< (ostream &os, const Pets &Array)
+    {
+            for(int index = 0; index < Array.numberOfPets; index++)
+                os << Array.petNames[index] << endl;
+
+        return os;
+    }
+
+    unsigned int get_number_of_pets() {
+        return numberOfPets;
+    }
+
+    void set_new_pet(const char newPet[])
+    {
+            
+        char** newArr = new char*[numberOfPets + 1];
+        memcpy(newArr, petNames, numberOfPets * sizeof(char*));
+        newArr[numberOfPets] = new char[strlen(newPet)+1];
+        strcpy(newArr[numberOfPets], newPet);
+
+        petNames = newArr;
+        
+        numberOfPets++;
+    
+    }
+
+    ~Pets() {
+        if(petNames != nullptr)
+        {
+            for(int index = 0; index < numberOfPets; index++)
+                delete[] petNames[index];
+            delete[] petNames;
+        }
+    }
 };
 
 int main()
@@ -804,8 +882,22 @@ int main()
     g<<p.get_isMember("Maria Lefter");
     g<<endl;
     g<<p.apply_discount15_if_isMember("Maria Lefter", 100);
+    g<<endl;
+    g<<p.get_isMember("Costelus Costel");
+    g<<endl;
+    g<<p.apply_discount15_if_isMember("Costelus Costel", 100);
+    g<<endl;
+    g<<p.get_isMember("Costelus Cos");
+    g<<endl;
+    g<<p.apply_discount15_if_isMember("Costelus Cos", 100)<<endl;
 
+    Pets c("pets.txt");
+    g<<endl;
+    g<<c<<endl;
+    c.set_new_pet("Kefir");
+    g<<endl;
+    g<<c;
 
-
+    
     return 0;
 }
