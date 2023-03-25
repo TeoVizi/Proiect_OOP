@@ -702,7 +702,6 @@ class Pets {
 
     char** petNames;
     unsigned int numberOfPets;
-    char species[500][30];
 
     public:
     Pets()
@@ -710,8 +709,19 @@ class Pets {
         petNames = nullptr;
         numberOfPets = 0;
 
-        for (int index = 0; index < 500; index++)
-            species[index][0] = NULL;
+    }
+
+    Pets(Pets& p)
+    {
+        if (p.petNames != nullptr) {
+            numberOfPets = p.numberOfPets;
+            petNames = new char*[numberOfPets];
+            for(int index = 0; index < numberOfPets; index++)
+            {
+                petNames[index] = new char[strlen(p.petNames[index])+1];
+                strcpy(petNames[index], p.petNames[index]);
+            }
+        }
     }
 
     Pets(UtilityReadFromFile read)
@@ -725,10 +735,7 @@ class Pets {
             this->petNames[index] = new char[strlen(read.get_array()[index])];
             strcpy(this->petNames[index], read.get_array()[index]);
         }
-
-        for (int index = 0; index < 500; index++)
-            strcpy(species[index], "/");
-
+     
     }
 
       friend ostream & operator<< (ostream &os, const Pets &Array)
@@ -756,6 +763,31 @@ class Pets {
         numberOfPets++;
     
     }
+
+        void delete_pet(char pet[])
+    {
+        int saveIndex = -1;
+        for(int index = 0; index < numberOfPets; index++)
+        {
+            if(strcmp(pet, petNames[index]) == 0)
+            {
+                saveIndex = index;
+                break;
+            }
+         }
+
+        if (saveIndex != -1)
+        {
+            delete[] petNames[saveIndex];
+
+            for(int index = saveIndex; index < numberOfPets - 1; index++)
+                petNames[index] = petNames[index+1];
+
+            --numberOfPets;
+        }
+        else g<<"Invalid owner name.";
+    }
+
 
     ~Pets() {
         if(petNames != nullptr)
@@ -866,6 +898,7 @@ int main()
     g<<endl<<endl;
 
     PetOwners p(UtilityReadFromFile ("pet_owners.txt"));
+
     g<<p;
     g<<p.get_number_of_pet_owners()<<endl;
     g<<endl;
@@ -892,12 +925,20 @@ int main()
     g<<p.apply_discount15_if_isMember("Costelus Cos", 100)<<endl;
 
     Pets c("pets.txt");
+    Pets pet(c);
+    g<<"Copy Constrctor example"<<endl;
+    g<<pet.get_number_of_pets();
+    g<<endl;
+    g<<pet<<endl;
     g<<endl;
     g<<c<<endl;
     c.set_new_pet("Kefir");
+    g<<c.get_number_of_pets()<<endl;
+    g<<c<<endl;
     g<<endl;
-    g<<c;
+    c.delete_pet("Stinky");
+    g<<c<<endl;
+    g<<c.get_number_of_pets();
 
-    
     return 0;
 }
