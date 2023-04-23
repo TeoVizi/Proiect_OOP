@@ -815,7 +815,7 @@ class Pets {
     }
 
 
-    ~Pets() {
+    virtual ~Pets() {
         if(petNames != nullptr)
         {
             for(int index = 0; index < numberOfPets; index++)
@@ -837,6 +837,12 @@ class Dogs : public Pets
             string name = names[index];
             species[Pets::get_pet_index_in_array(name)] = "Dog";
         }
+
+    }
+
+    ~Dogs()
+    {
+
     }
 
 };
@@ -850,11 +856,12 @@ pet.set_new_pet("Costel");
 pet.set_new_pet("Grigore");
 
 string petnames[200];
-petnames[0] = "nacho";
+petnames[0] = "nacho00";
 petnames[1] = "Costel";
 Dogs MyDog(petnames, 2);
 
 g<<pet.get_number_of_pets();
+g<<pet;
 
     return 0;
 }
