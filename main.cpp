@@ -3,7 +3,7 @@
 #include <fstream>
 #include <cstring>
 #include <string>
-#include <exception>
+#include <stdexcept>
 #include <new>
 
 using namespace std;
@@ -656,20 +656,25 @@ class PetOwners {
 
 };
 
-class PetNameNotInArray : public exception 
-{
-    string error_message;
 
-    public:
-    PetNameNotInArray(const string& message) : error_message(message) {}
+// class PetNameNotInArray : public exception 
+// {
+//     string error_message;
+
+//     public:
+//     PetNameNotInArray(const string& message) : error_message(message) {}
     
-        const char* what() const noexcept override 
-        {
-            return error_message.c_str();
-        }
+//         virtual const char* what() const noexcept {
+
+//             return error_message.c_str();
+//         }
+// };
+
+class PetNameNotInArray : public std::runtime_error {
+public:
+    PetNameNotInArray(const std::string& message) : std::runtime_error(message) {}
+
 };
-
-
 
 class Pets {
 
@@ -703,7 +708,15 @@ class Pets {
 
             if (saveIndex == -1)
             {
-                throw PetNameNotInArray("One or more invalid pet names");
+                try 
+                {
+
+                    throw PetNameNotInArray("One or more invalid pet names");
+                } 
+                catch (const PetNameNotInArray& e)
+                {
+                    std::cerr << "Caught PetNameNotInArray" << e.what() << endl;
+                }
             }
         }
     }
@@ -722,9 +735,17 @@ class Pets {
          }
 
         if (saveIndex == -1)
-        {
-            throw PetNameNotInArray("One or more invalid pet names");
-        }
+            {
+                try 
+                {
+
+                    throw PetNameNotInArray("One or more invalid pet names");
+                } 
+                catch (const PetNameNotInArray& e)
+                {
+                    std::cerr << "Caught PetNameNotInArray" << e.what()<< endl;
+                }
+            }
 
         return saveIndex;
     }
@@ -809,14 +830,15 @@ class Dogs : public Pets
     private:
     string species[200];
     public:
-    Dogs(string names[200], unsigned int numberOfNames, const string dogSpecies = "Dog") : Pets(names, numberOfNames) {
+    Dogs(string names[200], unsigned int numberOfNames) : Pets(names, numberOfNames) {
 
         for (int index = 0; index < numberOfNames; index++)
         {
             string name = names[index];
-            species[Pets::get_pet_index_in_array(name)] = dogSpecies;
+            species[Pets::get_pet_index_in_array(name)] = "Dog";
         }
     }
+
 };
 
 int main()
@@ -824,6 +846,14 @@ int main()
 
 Pets pet;
 pet.set_new_pet("nacho");
+pet.set_new_pet("Costel");
+pet.set_new_pet("Grigore");
+
+string petnames[200];
+petnames[0] = "nacho";
+petnames[1] = "Costel";
+Dogs MyDog(petnames, 2);
+
 g<<pet.get_number_of_pets();
 
     return 0;
