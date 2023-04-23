@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <fstream>
 #include <cstring>
+#include <string>
+#include <exception>
 #include <new>
 
 using namespace std;
@@ -216,33 +218,6 @@ class Vets {
         vets = nullptr;
         numberOfVets = 0;
         
-    }
-
-    Vets(UtilityReadFromFile read)
-    {
-       numberOfVets = read.get_length();
-        vets = new char*[numberOfVets];
-
-        unsigned int index = 0;
-        for(index = 0; index < numberOfVets; index++)
-        {
-             this->vets[index] = new char[strlen(read.get_array()[index])];
-            strcpy(this->vets[index], read.get_array()[index]);
-        }
-
-        for(index = 0; index < numberOfVets; index++)
-        {
-            strcpy(departmentForVet[index], "/");
-        }
-
-        for(int index = 0; index < 50; index++)
-        {
-            birthForVet[index] = Birthday(0,0,0);
-        }
-
-        for(index = 0; index < 50; index++)
-            netSalary[index] = 3000;
-       
     }
 
       friend ostream & operator<< (ostream &os, const Vets &Array)
@@ -496,6 +471,7 @@ class PetOwners {
     int numberOfPetOwners;
     Birthday birthOfPetOwner[200];
     bool isMember[200];
+    
 
     public: 
 
@@ -509,26 +485,7 @@ class PetOwners {
 
         for (int index = 0; index < 200; index++)
             isMember[index] = NULL;
-    }
-    
-    PetOwners(UtilityReadFromFile read)
-    {
-        numberOfPetOwners = read.get_length();
-        petOwners = new char*[numberOfPetOwners];
 
-        unsigned int index = 0;
-        for(index = 0; index < numberOfPetOwners; index++)
-        {
-             this->petOwners[index] = new char[strlen(read.get_array()[index])];
-            strcpy(this->petOwners[index], read.get_array()[index]);
-        }
-
-        for (int index = 0; index < 200; index++)
-            birthOfPetOwner[index] = Birthday(0,0,0); 
-    
-
-        for (int index = 0; index < 200; index++)
-            isMember[index] = 0;
     }
 
 
@@ -643,6 +600,7 @@ class PetOwners {
         }
     }
 
+    
     int get_isMember(char FullName[])
     {
          unsigned int saveIndex = -1;
@@ -698,6 +656,21 @@ class PetOwners {
 
 };
 
+class PetNameNotInArray : public exception 
+{
+    string error_message;
+
+    public:
+    PetNameNotInArray(const string& message) : error_message(message) {}
+    
+        const char* what() const noexcept override 
+        {
+            return error_message.c_str();
+        }
+};
+
+
+
 class Pets {
 
     char** petNames;
@@ -711,6 +684,52 @@ class Pets {
 
     }
 
+    protected:
+    Pets(string names[200], unsigned int numberOfNames)
+    {
+        for (int i = 0; i < numberOfNames; i++)
+        {    
+            int saveIndex = -1;
+            string name = names[i];
+            
+            for(int index = 0; index < numberOfPets; index++)
+            {
+                if(name == petNames[index])
+                {
+                    saveIndex = index;
+                    break;
+                }
+            }
+
+            if (saveIndex == -1)
+            {
+                throw PetNameNotInArray("One or more invalid pet names");
+            }
+        }
+    }
+
+    unsigned int get_pet_index_in_array (string name)
+    {
+        int saveIndex = -1;
+        
+        for(int index = 0; index < numberOfPets; index++)
+        {
+            if(name == petNames[index])
+            {
+                saveIndex = index;
+                break;
+            }
+         }
+
+        if (saveIndex == -1)
+        {
+            throw PetNameNotInArray("One or more invalid pet names");
+        }
+
+        return saveIndex;
+    }
+
+    public:
     Pets(Pets& p)
     {
         if (p.petNames != nullptr) {
@@ -722,20 +741,6 @@ class Pets {
                 strcpy(petNames[index], p.petNames[index]);
             }
         }
-    }
-
-    Pets(UtilityReadFromFile read)
-    {
-        numberOfPets = read.get_length();
-        petNames = new char*[numberOfPets];
-
-        unsigned int index = 0;
-        for(index = 0; index < numberOfPets; index++)
-        {
-            this->petNames[index] = new char[strlen(read.get_array()[index])];
-            strcpy(this->petNames[index], read.get_array()[index]);
-        }
-     
     }
 
       friend ostream & operator<< (ostream &os, const Pets &Array)
@@ -799,146 +804,27 @@ class Pets {
     }
 };
 
+class Dogs : public Pets
+{
+    private:
+    string species[200];
+    public:
+    Dogs(string names[200], unsigned int numberOfNames, const string dogSpecies = "Dog") : Pets(names, numberOfNames) {
+
+        for (int index = 0; index < numberOfNames; index++)
+        {
+            string name = names[index];
+            species[Pets::get_pet_index_in_array(name)] = dogSpecies;
+        }
+    }
+};
+
 int main()
 {
-    UtilityReadFromFile read("departments.txt");
-    Departments d(read), f;
 
-    g<<"FUNCTIONALITY FOR CLASS DEPARTMENTS:"<<endl;
-    g<<"Departments read from file:"<<endl;
-    g<<d;
-    g<<endl;
-    g<<"Get number of departments: ";
-    g << d.get_number_of_departments()<<endl;
-    d.set_new_department("Neurology"); // adding a new department
-    g<<endl;
-    g<<"Departments after adding a new one:"<<endl;
-    g<<d;
-    g<<endl;
-    g<<"Get departments after addition: ";
-    g<<d.get_number_of_departments()<<endl;
-    g<<endl;
-    g<<"Delete a department:"<<endl;
-    d.delete_department("Oncology");
-    g<<"Delete another department:"<<endl;
-    d.delete_department("Cardiology");
-    g<<endl;
-    g<<"Try to delete an non-existent department: "<<endl;
-    d.delete_department("Oncology");
-    g<<endl;
-    g<<d;
-    g<<endl;
-    g<<"Number of departments after deletion: ";
-    g<<d.get_number_of_departments()<<endl;
-    g<<endl;
-    g<<d;
-    g<<endl;
-    g<<"Add department to an empty departments array:"<<endl;
-    f.set_new_department("Diabetology");
-    g<<f.get_number_of_departments()<<endl;
-    g<<f;
-    g<<endl<<endl;
-
-
-    Vets m(UtilityReadFromFile ("vets.txt")),n;
-    g<<"Vets read from file:"<<endl;
-    g<<m<<endl;
-    g<<"Number of vets:"<<endl;
-    g<<m.get_number_of_vets();
-    g<<endl<<endl;
-    g<<"Try to assign a department to a non-existent vet"<<endl;
-    m.set_department_for_vet("Marian Ivasc", "Neurology", d.get_pointer_to_departments(), d.get_number_of_departments());
-    g<<endl<<endl;
-    g<<"Try to assing a non-existent department to a vet"<<endl;
-    m.set_department_for_vet("Marian Ivascu", "Neurol", d.get_pointer_to_departments(), d.get_number_of_departments());
-    g<<endl<<endl;
-    g<<"Assign a department to a vet"<<endl;
-    m.set_department_for_vet("Marian Ivascu", "Neurology", d.get_pointer_to_departments(), d.get_number_of_departments());
-    g<<endl<<endl;
-    g<<"Get the department a vet works in:"<<endl;
-    g<<m.get_department_for_vet("Marian Ivascu")<<endl;
-    g<<m.get_department_for_vet("Ion Constantin")<<endl;
-    g<<m.get_department_for_vet("Cornel Sorin");
-    g<<endl<<endl;
-    g<<"Setting birthday for vet";
-    m.set_birthday_for_vet("Marian Ivascu", Birthday(19,6,1989));
-    g<<endl;
-    m.set_birthday_for_vet("Ioana Popescu", Birthday(19,6,1989));
-    g<<endl;
-    g<<"Get birthday for vet: ";
-    g<<m.get_birthday_for_vet("Ioana Popescu");
-    g<<endl<<endl;
-    m.delete_vet("Marian Ivascu");
-    g<<m;
-    g<<endl;
-    g<<"Add new vet:"<<endl;
-    m.set_new_vet("Ion Constantin");
-    g<<m;
-    g<<endl;
-    g<<"Add new vet to empty vets array:"<<endl;
-    n.set_new_vet("Ionel Cornel");
-    g<<n;
-    n.set_department_for_vet("Ionel Cornel", "Neurology", d.get_pointer_to_departments(), d.get_number_of_departments());
-    g<<n.get_department_for_vet("Ionel Cornel");
-    n.set_birthday_for_vet("Ionel Cornel", Birthday(2,3,1967));
-    g<<endl;
-    g<<n.get_birthday_for_vet("Ionel Cornel");
-    g<<endl;
-    g<<"Set and get salary for a vet"<<endl;
-    m.set_netSalary("Ioana Popescu", 3500);
-    g<<m.get_netSalary("Ioana Popescu")<<endl;
-    g<<"Get hourly salary:"<<endl;
-    g<<m.get_hourly_salary("Ioana Popescu")<<endl;
-    g<<"Get annual salary:"<<endl;
-    g<<m.get_anual_salary("Ioana Popescu")<<endl;
-    g<<"Get full vet info:"<<endl;
-    g<<endl;
-    m.get_full_vet_info("Ioana Popescu");
-
-    g<<endl<<endl;
-
-    PetOwners p(UtilityReadFromFile ("pet_owners.txt"));
-
-    g<<p;
-    g<<p.get_number_of_pet_owners()<<endl;
-    g<<endl;
-    p.set_new_petOwner("Maria Lefter");
-    g<<p;
-    g<<p.get_number_of_pet_owners()<<endl;
-    p.delete_petOwner("Maria Lefter");
-    g<<endl;
-    p.set_new_petOwner("Maria Lefter");
-    p.set_birthday_for_petOwner("Maria Lefter", Birthday(3,4,1978));
-    g<<p.get_birthday_for_perOwner("Maria Lefter");
-    g<<p<<endl;
-    p.set_isMember("Maria Lefter");
-    g<<p.get_isMember("Maria Lefter");
-    g<<endl;
-    g<<p.apply_discount15_if_isMember("Maria Lefter", 100);
-    g<<endl;
-    g<<p.get_isMember("Costelus Costel");
-    g<<endl;
-    g<<p.apply_discount15_if_isMember("Costelus Costel", 100);
-    g<<endl;
-    g<<p.get_isMember("Costelus Cos");
-    g<<endl;
-    g<<p.apply_discount15_if_isMember("Costelus Cos", 100)<<endl;
-
-    Pets c("pets.txt");
-    Pets pet(c);
-    g<<"Copy Constrctor example"<<endl;
-    g<<pet.get_number_of_pets();
-    g<<endl;
-    g<<pet<<endl;
-    g<<endl;
-    g<<c<<endl;
-    c.set_new_pet("Kefir");
-    g<<c.get_number_of_pets()<<endl;
-    g<<c<<endl;
-    g<<endl;
-    c.delete_pet("Stinky");
-    g<<c<<endl;
-    g<<c.get_number_of_pets();
+Pets pet;
+pet.set_new_pet("nacho");
+g<<pet.get_number_of_pets();
 
     return 0;
 }
