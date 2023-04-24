@@ -678,15 +678,13 @@ public:
 
 class Pets {
 
-    char** petNames;
+    string petNames[200];
     unsigned int numberOfPets;
 
     public:
     Pets()
     {
-        petNames = nullptr;
         numberOfPets = 0;
-
     }
 
     protected:
@@ -697,7 +695,7 @@ class Pets {
             int saveIndex = -1;
             string name = names[i];
             
-            for(int index = 0; index < numberOfPets; index++)
+            for(int index = 0; index < numberOfNames; index++)
             {
                 if(name == petNames[index])
                 {
@@ -711,7 +709,7 @@ class Pets {
                 try 
                 {
 
-                    throw PetNameNotInArray("One or more invalid pet names");
+                    throw PetNameNotInArray(" One or more invalid pet names");
                 } 
                 catch (const PetNameNotInArray& e)
                 {
@@ -751,19 +749,7 @@ class Pets {
     }
 
     public:
-    Pets(Pets& p)
-    {
-        if (p.petNames != nullptr) {
-            numberOfPets = p.numberOfPets;
-            petNames = new char*[numberOfPets];
-            for(int index = 0; index < numberOfPets; index++)
-            {
-                petNames[index] = new char[strlen(p.petNames[index])+1];
-                strcpy(petNames[index], p.petNames[index]);
-            }
-        }
-    }
-
+    
       friend ostream & operator<< (ostream &os, const Pets &Array)
     {
             for(int index = 0; index < Array.numberOfPets; index++)
@@ -779,13 +765,7 @@ class Pets {
     void set_new_pet(const char newPet[])
     {
             
-        char** newArr = new char*[numberOfPets + 1];
-        memcpy(newArr, petNames, numberOfPets * sizeof(char*));
-        newArr[numberOfPets] = new char[strlen(newPet)+1];
-        strcpy(newArr[numberOfPets], newPet);
-
-        petNames = newArr;
-        
+        petNames->append(newPet);
         numberOfPets++;
     
     }
@@ -795,7 +775,7 @@ class Pets {
         int saveIndex = -1;
         for(int index = 0; index < numberOfPets; index++)
         {
-            if(strcmp(pet, petNames[index]) == 0)
+            if(pet == petNames[index])
             {
                 saveIndex = index;
                 break;
@@ -804,25 +784,22 @@ class Pets {
 
         if (saveIndex != -1)
         {
-            delete[] petNames[saveIndex];
-
-            for(int index = saveIndex; index < numberOfPets - 1; index++)
-                petNames[index] = petNames[index+1];
+            string newArray[200];
+            int newIndex = 0;
+            for(int index = 0; index < numberOfPets; index ++)
+            {
+                if(index != saveIndex)
+                {
+                    newArray[newIndex] = petNames[index];
+                    newIndex++;
+                }
+            }
 
             --numberOfPets;
         }
         else g<<"Invalid owner name.";
     }
 
-
-    virtual ~Pets() {
-        if(petNames != nullptr)
-        {
-            for(int index = 0; index < numberOfPets; index++)
-                delete[] petNames[index];
-            delete[] petNames;
-        }
-    }
 };
 
 class Dogs : public Pets
@@ -830,6 +807,8 @@ class Dogs : public Pets
     private:
     string species[200];
     public:
+
+
     Dogs(string names[200], unsigned int numberOfNames) : Pets(names, numberOfNames) {
 
         for (int index = 0; index < numberOfNames; index++)
@@ -855,10 +834,12 @@ pet.set_new_pet("nacho");
 pet.set_new_pet("Costel");
 pet.set_new_pet("Grigore");
 
+
 string petnames[200];
 petnames[0] = "nacho00";
 petnames[1] = "Costel";
-Dogs MyDog(petnames, 2);
+
+Dogs MyDogs(petnames, 2);
 
 g<<pet.get_number_of_pets();
 g<<pet;
