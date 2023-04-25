@@ -491,20 +491,18 @@ class Client {
 };
 
 
-
-
-// class ErrorResetName : public std::exception {
-//     public:
-//  char * what () const noexcept override {
-//         return "You cannot reset a pets' name!";
-//     }
-// };
-
+class ErrorResetName : public std::exception {
+    public:
+    char* what() noexcept {
+        return "You cannot reset a pets' name!";
+    }
+};
 
 
 class Pet {
 
     private:
+
     string name;
     string owner;
     unsigned int age;
@@ -524,17 +522,17 @@ class Pet {
         age = setAge;
     }
 
-    unsigned int get_age()
+    unsigned int get_age() const
     {
         return age;
     }
 
-    string get_name()
+    string get_name() const
     {
         return name;
     }
 
-    string get_owner()
+    string get_owner() const
     {
         return owner;
     }
@@ -578,17 +576,16 @@ class Dog : public Pet {
         return species;
     }
 
-    // void print_info() const override
-    // {
-    //     g << "Dog Information:" << endl;
-    //     g << "Name: " << Pet::get_name() << endl;
-    //     g << "Owner: " << Pet::get_owner() << endl;
-    //     g << "Age: " << Pet::get_age() << endl;
-    //     g << "Breed: " << breed << endl;
-    // }
+    void print_info() const override
+    {
+        g << "Dog Information:" << endl;
+        g << "Name: " << Pet::get_name() << endl;
+        g << "Owner: " << Pet::get_owner() << endl;
+        g << "Age: " << Pet::get_age() << endl;
+        g << "Breed: " << breed << endl;
+    }
 
 };
-
 
 int main()
 {
