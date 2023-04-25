@@ -678,6 +678,7 @@ public:
 
 class Pets {
 
+    protected:
     string petNames[200];
     unsigned int numberOfPets;
 
@@ -770,7 +771,7 @@ class Pets {
     
     }
 
-        void delete_pet(char pet[])
+    void delete_pet(char pet[])
     {
         int saveIndex = -1;
         for(int index = 0; index < numberOfPets; index++)
@@ -806,15 +807,15 @@ class Dogs : public Pets
 {
     private:
     string species[200];
+    string 
     public:
-
 
     Dogs(string names[200], unsigned int numberOfNames) : Pets(names, numberOfNames) {
 
         for (int index = 0; index < numberOfNames; index++)
         {
             string name = names[index];
-            species[Pets::get_pet_index_in_array(name)] = "Dog";
+            g<<
         }
 
     }
@@ -834,15 +835,12 @@ pet.set_new_pet("nacho");
 pet.set_new_pet("Costel");
 pet.set_new_pet("Grigore");
 
+string pet = "Costel"
 
-string petnames[200];
-petnames[0] = "nacho00";
-petnames[1] = "Costel";
-
-Dogs MyDogs(petnames, 2);
-
+Dogs MyDogs(, 1);
 g<<pet.get_number_of_pets();
 g<<pet;
+
 
     return 0;
 }
