@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstring>
 #include <string>
+#include <vector>
 #include <stdexcept>
 #include <new>
 
@@ -465,382 +466,134 @@ class Vets {
     }
 };
 
-class PetOwners {
+class Client {
 
-    char** petOwners;
-    int numberOfPetOwners;
-    Birthday birthOfPetOwner[200];
-    bool isMember[200];
+    string name;
+    Birthday birthday;
     
-
-    public: 
-
-    PetOwners()
+    Client(string setName, Birthday setBirthday)
     {
-        petOwners = nullptr;
-        numberOfPetOwners = 0;
-
-        for (int index = 0; index < 200; index++)
-            birthOfPetOwner[index] = Birthday(NULL,NULL,NULL); 
-
-        for (int index = 0; index < 200; index++)
-            isMember[index] = NULL;
-
+        name = setName;
+        birthday = setBirthday;
     }
 
-
-    friend ostream & operator<< (ostream &os, const PetOwners &Array)
+    string get_name()
     {
-            for(int index = 0; index < Array.numberOfPetOwners; index++)
-                os << Array.petOwners[index] << endl;
-
-        return os;
+        return name;
     }
-   
 
-   unsigned int get_number_of_pet_owners()
-   {
-        return numberOfPetOwners;
-   }
-
-    void set_new_petOwner(const char* newPetOwner)
+    string print_birthday()
     {
-        char** newArr = new char*[numberOfPetOwners + 1];
-        memcpy(newArr, petOwners, numberOfPetOwners * sizeof(char*));
-        newArr[numberOfPetOwners] = new char[strlen(newPetOwner)+1];
-        strcpy(newArr[numberOfPetOwners], newPetOwner);
-
-        petOwners = newArr;
-        
-        numberOfPetOwners++;
+        g<<birthday;
     }
 
-
-       void delete_petOwner(char FullName[])
-    {
-        int saveIndex = -1;
-        for(int index = 0; index < numberOfPetOwners; index++)
-        {
-            if(strcmp(FullName, petOwners[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-         }
-
-        if (saveIndex != -1)
-        {
-            delete[] petOwners[saveIndex];
-
-            for(int index = saveIndex; index < numberOfPetOwners - 1; index++)
-                petOwners[index] = petOwners[index+1];
-                
-            for(int index = saveIndex; index < numberOfPetOwners - 1; index++)
-                 birthOfPetOwner[index] = birthOfPetOwner[index+1];
-
-            --numberOfPetOwners;
-        }
-        else g<<"Invalid owner name.";
-    }
-
-     void set_birthday_for_petOwner(char FullName[], Birthday birth)
-    {
-        bool validName = 0;
-        unsigned int saveIndex = -1;
-        for (int index = 0; index < numberOfPetOwners; index++)
-        {
-            if (strcmp(FullName, petOwners[index]) == 0)
-            {
-                validName = 1;
-                saveIndex = index;
-            }
-        }
-
-        if (saveIndex != -1)
-        {
-            birthOfPetOwner[saveIndex] = birth;
-        } 
-        else g<<"Invalid vet";
-    }
-
-    Birthday get_birthday_for_perOwner(char FullName[]) {
-        bool validName = 0;
-        unsigned int saveIndex = -1;
-
-        for (int index = 0; index < numberOfPetOwners; index++)
-        {
-            if (strcmp(FullName, petOwners[index]) == 0)
-            {
-                validName = 1;
-                saveIndex = index;
-            }
-        }
-
-         if (saveIndex != -1)
-        {
-            return birthOfPetOwner[saveIndex];
-        } 
-    }
-
-    void set_isMember(char FullName[])
-    {
-         unsigned int saveIndex = -1;
-
-        for (int index = 0; index < numberOfPetOwners; index++)
-        {
-            if (strcmp(FullName, petOwners[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-        }
-        if (saveIndex != -1)
-        {
-            isMember[saveIndex] = 1;
-        }
-    }
-
-    
-    int get_isMember(char FullName[])
-    {
-         unsigned int saveIndex = -1;
-
-        for (int index = 0; index < numberOfPetOwners; index++)
-        {
-            if (strcmp(FullName, petOwners[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-        }
-        if (saveIndex != -1)
-        {
-            return isMember[saveIndex];
-        }
-        else return (-1);
-    }
-
-    float apply_discount15_if_isMember(char FullName[], unsigned int procedurePrice)
-    {
-        unsigned int saveIndex = -1;
-
-        for (int index = 0; index < numberOfPetOwners; index++)
-        {
-            if (strcmp(FullName, petOwners[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-        }
-        if (saveIndex != -1)
-        {
-            if (isMember[saveIndex] == 1)
-            {
-                return float(0.75 * procedurePrice);
-            }
-            else return procedurePrice;
-        }
-        else return -1;
-
-    }
-
-    ~PetOwners()
-    {
-        if(petOwners != nullptr)
-        {
-            for(int index = 0; index < numberOfPetOwners; index++)
-                delete[] petOwners[index];
-            delete[] petOwners;
-        }
-    }
 
 };
 
 
-// class PetNameNotInArray : public exception 
-// {
-//     string error_message;
 
+
+// class ErrorResetName : public std::exception {
 //     public:
-//     PetNameNotInArray(const string& message) : error_message(message) {}
-    
-//         virtual const char* what() const noexcept {
-
-//             return error_message.c_str();
-//         }
+//  char * what () const noexcept override {
+//         return "You cannot reset a pets' name!";
+//     }
 // };
 
-class PetNameNotInArray : public std::runtime_error {
-public:
-    PetNameNotInArray(const std::string& message) : std::runtime_error(message) {}
 
-};
 
-class Pets {
+class Pet {
 
-    protected:
-    string petNames[200];
-    unsigned int numberOfPets;
-
-    public:
-    Pets()
-    {
-        numberOfPets = 0;
-    }
-
-    protected:
-    Pets(string names[200], unsigned int numberOfNames)
-    {
-        for (int i = 0; i < numberOfNames; i++)
-        {    
-            int saveIndex = -1;
-            string name = names[i];
-            
-            for(int index = 0; index < numberOfNames; index++)
-            {
-                if(name == petNames[index])
-                {
-                    saveIndex = index;
-                    break;
-                }
-            }
-
-            if (saveIndex == -1)
-            {
-                try 
-                {
-
-                    throw PetNameNotInArray(" One or more invalid pet names");
-                } 
-                catch (const PetNameNotInArray& e)
-                {
-                    std::cerr << "Caught PetNameNotInArray" << e.what() << endl;
-                }
-            }
-        }
-    }
-
-    unsigned int get_pet_index_in_array (string name)
-    {
-        int saveIndex = -1;
-        
-        for(int index = 0; index < numberOfPets; index++)
-        {
-            if(name == petNames[index])
-            {
-                saveIndex = index;
-                break;
-            }
-         }
-
-        if (saveIndex == -1)
-            {
-                try 
-                {
-
-                    throw PetNameNotInArray("One or more invalid pet names");
-                } 
-                catch (const PetNameNotInArray& e)
-                {
-                    std::cerr << "Caught PetNameNotInArray" << e.what()<< endl;
-                }
-            }
-
-        return saveIndex;
-    }
-
-    public:
-    
-      friend ostream & operator<< (ostream &os, const Pets &Array)
-    {
-            for(int index = 0; index < Array.numberOfPets; index++)
-                os << Array.petNames[index] << endl;
-
-        return os;
-    }
-
-    unsigned int get_number_of_pets() {
-        return numberOfPets;
-    }
-
-    void set_new_pet(const char newPet[])
-    {
-            
-        petNames->append(newPet);
-        numberOfPets++;
-    
-    }
-
-    void delete_pet(char pet[])
-    {
-        int saveIndex = -1;
-        for(int index = 0; index < numberOfPets; index++)
-        {
-            if(pet == petNames[index])
-            {
-                saveIndex = index;
-                break;
-            }
-         }
-
-        if (saveIndex != -1)
-        {
-            string newArray[200];
-            int newIndex = 0;
-            for(int index = 0; index < numberOfPets; index ++)
-            {
-                if(index != saveIndex)
-                {
-                    newArray[newIndex] = petNames[index];
-                    newIndex++;
-                }
-            }
-
-            --numberOfPets;
-        }
-        else g<<"Invalid owner name.";
-    }
-
-};
-
-class Dogs : public Pets
-{
     private:
-    string species[200];
-    string 
+    string name;
+    string owner;
+    unsigned int age;
+
     public:
-
-    Dogs(string names[200], unsigned int numberOfNames) : Pets(names, numberOfNames) {
-
-        for (int index = 0; index < numberOfNames; index++)
-        {
-            string name = names[index];
-            g<<
-        }
-
+    Pet()
+    {
+        age = NULL;
+        name = "";
+        owner = "";
     }
 
-    ~Dogs()
+    Pet(string setName, string setOwner, unsigned int setAge)
     {
+        name = setName;
+        owner = setOwner;
+        age = setAge;
+    }
 
+    unsigned int get_age()
+    {
+        return age;
+    }
+
+    string get_name()
+    {
+        return name;
+    }
+
+    string get_owner()
+    {
+        return owner;
+    }
+
+     virtual void print_info() const
+    {
+        g << "Pet Information:" << endl;
+        g << "Name: " << name << endl;
+        g << "Owner: " << owner << endl;
+        g << "Age: " << age << endl;
     }
 
 };
+
+class Dog : public Pet {
+
+    private:
+    string breed;
+    string species;
+
+    public:
+    Dog() : Pet()
+    {
+        breed = "";
+        species = "";
+    }
+
+    Dog(string setName, string setOwner, unsigned int setAge, string setBreed) : Pet(setName, setOwner, setAge)
+    {
+        breed = setBreed;
+        species = "Dog";
+    }
+
+    string get_breed()
+    {
+        return breed;
+    }
+
+    string get_species()
+    {
+        return species;
+    }
+
+    // void print_info() const override
+    // {
+    //     g << "Dog Information:" << endl;
+    //     g << "Name: " << Pet::get_name() << endl;
+    //     g << "Owner: " << Pet::get_owner() << endl;
+    //     g << "Age: " << Pet::get_age() << endl;
+    //     g << "Breed: " << breed << endl;
+    // }
+
+};
+
 
 int main()
 {
 
-Pets pet;
-pet.set_new_pet("nacho");
-pet.set_new_pet("Costel");
-pet.set_new_pet("Grigore");
-
-string pet = "Costel"
-
-Dogs MyDogs(, 1);
-g<<pet.get_number_of_pets();
-g<<pet;
-
+    Dog d("Dorel", "Teo", 3, "Goldie");
 
     return 0;
 }
