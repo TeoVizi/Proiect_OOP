@@ -4,7 +4,7 @@
 #include <cstring>
 #include <string>
 #include <vector>
-#include <stdexcept>
+#include <exception>
 #include <new>
 
 using namespace std;
@@ -466,12 +466,30 @@ class Vets {
     }
 };
 
-class Client {
+class LoyaltyPoints
+{
+    private:
+    int points;
+    protected:
+    virtual float calculate_loyalty_points(int price) = 0;
+    
+};
+
+class Discount
+{
+    protected:
+    virtual float calculate_discount(int price);
+    
+    virtual ~Discount() {}
+};
+
+class Client : public Discount, public LoyaltyPoints {
 
     string name;
     Birthday birthday;
     
-    Client(string setName, Birthday setBirthday)
+    public:
+    Client(string setName, Birthday setBirthday) : Discount(), LoyaltyPoints()
     {
         name = setName;
         birthday = setBirthday;
@@ -487,21 +505,60 @@ class Client {
         g<<birthday;
     }
 
+    void calculate_loyalty_points
+
+    float calculate_discount(int price)
+    {
+        return (price - (price * 15)/100);
+    }
+
+};
+
+class PremiumClient : public Discount, public LoyaltyPoints {
+
+    string name;
+    Birthday birthday;
+    
+    public:
+    PremiumClient(string setName, Birthday setBirthday) : Discount(), LoyaltyPoints()
+    {
+        name = setName;
+        birthday = setBirthday;
+    }
+
+    string get_name()
+    {
+        return name;
+    }
+
+    string print_birthday()
+    {
+        g<<birthday;
+    }
+
+    float calculate_discount(int price)
+    {
+        return (price - (price * 30)/100);
+    }
 
 };
 
 
-class ErrorResetName : public std::exception {
-    public:
-    char* what() noexcept {
-        return "You cannot reset a pets' name!";
+
+
+class CustomException : public exception {
+public:
+   
+    const char* what() const throw() {
+        return "You shouldn't reset a property, it could lead to unwanted bugs!";
     }
+
 };
 
 
 class Pet {
 
-    private:
+    protected:
 
     string name;
     string owner;
@@ -510,8 +567,8 @@ class Pet {
     public:
     Pet()
     {
-        age = NULL;
-        name = "";
+        age = 0;
+        name = nullptr;
         owner = "";
     }
 
@@ -537,12 +594,31 @@ class Pet {
         return owner;
     }
 
+    void set_name(const char* setName)
+    {
+        try
+        {
+           name = setName;
+           throw CustomException();
+        }
+        catch(const CustomException& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        
+    }
+
      virtual void print_info() const
     {
         g << "Pet Information:" << endl;
         g << "Name: " << name << endl;
         g << "Owner: " << owner << endl;
         g << "Age: " << age << endl;
+    }
+
+    virtual ~Pet()
+    {
+       
     }
 
 };
@@ -560,7 +636,7 @@ class Dog : public Pet {
         species = "";
     }
 
-    Dog(string setName, string setOwner, unsigned int setAge, string setBreed) : Pet(setName, setOwner, setAge)
+    Dog(const char* setName, string setOwner, unsigned int setAge, string setBreed) : Pet(setName, setOwner, setAge)
     {
         breed = setBreed;
         species = "Dog";
@@ -579,18 +655,31 @@ class Dog : public Pet {
     void print_info() const override
     {
         g << "Dog Information:" << endl;
-        g << "Name: " << Pet::get_name() << endl;
-        g << "Owner: " << Pet::get_owner() << endl;
-        g << "Age: " << Pet::get_age() << endl;
+        g << "Name: " << name << endl;
+        g << "Owner: " << owner << endl;
+        g << "Age: " << age << endl;
         g << "Breed: " << breed << endl;
     }
+
+    
 
 };
 
 int main()
 {
 
-    Dog d("Dorel", "Teo", 3, "Goldie");
+    Pet* pet = new Dog("Dorel", "Teo", 3, "Goldie");
+    pet->print_info();
+    delete pet;
+
+    Dog d();
+
+    Pet p("Costinel", "Teo", 3);
+   
+    g<<p.get_age()<<endl;
+
+    Client c();
+
 
     return 0;
 }

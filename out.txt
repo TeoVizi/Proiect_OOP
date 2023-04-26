@@ -1,3 +1,7 @@
-Nacho
-NAcho
-GoldieDog
+Dog Information:
+Name: Dorel
+Owner: Teo
+Age: 3
+Breed: Goldie
+aici3
+aici
