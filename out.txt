@@ -3,5 +3,7 @@ Name: Dorel
 Owner: Teo
 Age: 3
 Breed: Goldie
-aici3
-aici
+1
+1
+3
+85

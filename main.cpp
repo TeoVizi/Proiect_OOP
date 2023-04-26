@@ -468,8 +468,7 @@ class Vets {
 
 class LoyaltyPoints
 {
-    private:
-    int points;
+
     protected:
     virtual float calculate_loyalty_points(int price) = 0;
     
@@ -505,7 +504,10 @@ class Client : public Discount, public LoyaltyPoints {
         g<<birthday;
     }
 
-    void calculate_loyalty_points
+    float calculate_loyalty_points(int price)
+    {
+        return 0.15 * price;
+    }
 
     float calculate_discount(int price)
     {
@@ -541,6 +543,11 @@ class PremiumClient : public Discount, public LoyaltyPoints {
         return (price - (price * 30)/100);
     }
 
+    float calculate_loyalty_points(int price)
+    {
+        return 0.15 * price;
+    }
+
 };
 
 
@@ -563,6 +570,7 @@ class Pet {
     string name;
     string owner;
     unsigned int age;
+    static int numOfPets;
 
     public:
     Pet()
@@ -574,6 +582,7 @@ class Pet {
 
     Pet(string setName, string setOwner, unsigned int setAge)
     {
+        numOfPets++;
         name = setName;
         owner = setOwner;
         age = setAge;
@@ -608,6 +617,11 @@ class Pet {
         
     }
 
+    static int get_num_pets()
+    {
+        return numOfPets;
+    }
+
      virtual void print_info() const
     {
         g << "Pet Information:" << endl;
@@ -618,7 +632,9 @@ class Pet {
 
     virtual ~Pet()
     {
-       
+        
+       --numOfPets;
+     
     }
 
 };
@@ -665,12 +681,17 @@ class Dog : public Pet {
 
 };
 
+int Pet::numOfPets = 0;
+
 int main()
 {
 
     Pet* pet = new Dog("Dorel", "Teo", 3, "Goldie");
     pet->print_info();
+    g<<Pet::get_num_pets<<endl;
     delete pet;
+    g<<Pet::get_num_pets<<endl;
+
 
     Dog d();
 
@@ -678,7 +699,9 @@ int main()
    
     g<<p.get_age()<<endl;
 
-    Client c();
+    Client c("Sorin", Birthday (1, 12, 1990));
+
+    g<<c.calculate_discount(100);
 
 
     return 0;
