@@ -11,6 +11,8 @@ using namespace std;
 
 ofstream g("out.txt", ios::out);
 
+ifstream c("pet_owners.txt");
+
 
 class Departments: private vector<string> {
 
@@ -115,9 +117,23 @@ class Person
 };
 
 
-class Vets: public Person {
+class Vet: public Person {
 
-    float salary = 3000;
+    float salary;
+    static int numOfVets;
+
+    public:
+    Vet() : Person()
+    {
+        numOfVets++;
+        salary = 3000;
+    }
+
+    Vet(string setName, Birthday setBirthday) : Person(setName, setBirthday)
+    {
+        numOfVets++;
+        salary = 3000;
+    }
 
     void set_salary(float setSalary)
     {
@@ -128,8 +144,16 @@ class Vets: public Person {
     {
         return salary;
     }
+
+    static unsigned int get_num_of_vets()
+    {
+        return numOfVets;
+    }
     
-       
+    virtual ~Vet()
+    {
+        numOfVets--;
+    }
 };
 
 class LoyaltyPoints
@@ -209,7 +233,7 @@ class PremiumClient : public Client {
 
 
 
-class CustomExceptionName : public exception {
+class NotLongEnoughName : public exception {
 public:
    
     const char* what() const throw() {
@@ -217,6 +241,25 @@ public:
     }
 
 };
+
+class InvalidAge : public exception {
+public:
+   
+    const char* what() const throw() {
+        return "One's age cannot be a negative value!";
+    }
+
+};
+
+class InvalidSalary : public exception {
+public:
+   
+    const char* what() const throw() {
+        return "One's salary cannot be less than 3000";
+    }
+
+};
+
 
 
 class Pet {
@@ -234,7 +277,7 @@ class Pet {
     {
         age = 0;
         numOfPets++;
-        name = nullptr;
+        name = "";
     }
 
     Pet(string setName, unsigned int setAge)
@@ -255,7 +298,7 @@ class Pet {
     }
 
 
-    void set_name(const char* setName)
+    void set_name(string setName)
     {
            name = setName;
     }
@@ -284,7 +327,6 @@ class Pet {
 class Dog : public Pet {
 
     private:
-    string food;
     string breed;
     string species;
 
@@ -295,7 +337,7 @@ class Dog : public Pet {
         species = "";
     }
 
-    Dog(const char* setName, unsigned int setAge, string setBreed) : Pet(setName, setAge)
+    Dog(string setName, unsigned int setAge, string setBreed) : Pet(setName, setAge)
     {
         breed = setBreed;
         species = "Dog";
@@ -328,7 +370,6 @@ class Cat : public Pet {
     private:
     string breed;
     string species;
-    string food;
 
     public:
     Cat() : Pet()
@@ -337,7 +378,7 @@ class Cat : public Pet {
         species = "";
     }
 
-    Cat(const char* setName, unsigned int setAge, string setBreed) : Pet(setName, setAge)
+    Cat(string setName, unsigned int setAge, string setBreed) : Pet(setName, setAge)
     {
         breed = setBreed;
         species = "Cat";
@@ -364,16 +405,88 @@ class Cat : public Pet {
 };
 
 int Pet::numOfPets = 0;
+int Vet::numOfVets = 0;
 
 int main()
 {
-
-   Dog dogs[10];
-   dogs[0].set_name("Charlie");
-   dogs[0].set_age(3);
-
    Client clients[10];
+   int i = 0;
+   string names[10]={"Maria Ionescu","Ion Constantin", "Va"};
+   
+   for (int i=0; i < names->length(); i++)
+   {
+    try
+    {
+        if (names[i].length() < 3)
+        {
+            throw(NotLongEnoughName());
+            
+        }
+        else
+        {
+            clients[i].set_name(names[i]);
+        }
+        
+    }
+    catch(const NotLongEnoughName& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
+   
+    
+   }
+   Dog dogs[2];
+   g << Pet::get_num_pets();
+   int ages[10]={2, -3, 5};
+
+   string DogNames[2]={"Dorel","te"};
+   for (int i =0; i< 2; i++)
+   {
+        dogs[i].set_name(DogNames[i]);
+
+    try
+    {
+        if(ages[i] < 0)
+        {
+            throw(InvalidAge());
+        }
+        else
+        {
+            dogs[i].set_age(ages[i]);
+        }
+    
+    }
+    catch(const InvalidAge& r)
+    {
+        std::cerr << r.what() << endl;
+    }
+   }
+
+    Vet vets[2];
+    string VetNames[2]={"Costelus","Maria"};
+    int salary[2] = {100, 60000};
+    for(int i = 0; i < 2; i++)
+    {
+        vets[i].set_name(VetNames[i]);
+
+        try
+        {
+            if(salary[i] < 3000)
+            {
+                throw(InvalidSalary());
+            }
+            else
+            {
+                vets[i].set_salary(salary[i]);
+            }
+        }
+        catch(const InvalidSalary& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        
+    }
 
     return 0;
 }
