@@ -12,155 +12,28 @@ using namespace std;
 ofstream g("out.txt", ios::out);
 
 
-
-class UtilityReadFromFile {
-
-    char** Array;
-    unsigned int length;
+class Departments: private vector<string> {
 
     public:
-    UtilityReadFromFile(const char* fileName)
+    void add_department(string department)
     {
-        ifstream inputFile(fileName);
+        push_back(department);
+    }
 
-        length = 0;
-        char currentElemnent[100];
-
-        while (inputFile.getline(currentElemnent,100))
-            length++;
-
-        Array = new char*[length];
-
-        unsigned int index = 0;
-
-        inputFile.clear();
-        inputFile.seekg(0, ios::beg);
-
-        for (int index = 0; index < length; index++) 
+    void delete_department(string department)
+    {
+        if(!(*this).empty())
         {
-            inputFile.getline(currentElemnent,100);
-            Array[index] = new char[strlen(currentElemnent)];
-            strcpy(Array[index], currentElemnent);
+            (*this).erase(remove((*this).begin(), (*this).end(), department), (*this).end());
         }
-
-        inputFile.close();
-
     }
 
-    char** get_array() {
-        return Array;
-    }
+    void get_departments() {
 
-    unsigned int get_length() {
-        return length;
-    }
-
-};
-
-
-
-class Departments {
-
-    char** departments;
-    unsigned int numberOfDepartments;
-
-    public:
-    Departments()
-    {
-        departments = nullptr;
-        numberOfDepartments = 0;
-    }
-
-
-    Departments (UtilityReadFromFile read)
-    {   
-        
-        numberOfDepartments = read.get_length();
-        departments = new char*[numberOfDepartments];
-
-        unsigned int index = 0;
-        for(index = 0; index < numberOfDepartments; index++)
+        for (int i = 0; i < (*this).size(); i++)
         {
-             this->departments[index] = new char[strlen(read.get_array()[index])];
-            strcpy(this->departments[index], read.get_array()[index]);
+            g<<(*this)[i];
         }
-
-    }
-
-
-    unsigned int get_number_of_departments() 
-    {
-        return numberOfDepartments;
-    }
-        
-    void set_new_department(const char* newDepartment)
-    {
-        char** newArr = new char*[numberOfDepartments + 1];
-        memcpy(newArr, departments, numberOfDepartments * sizeof(char*));
-        newArr[numberOfDepartments] = new char[strlen(newDepartment)+1];
-        strcpy(newArr[numberOfDepartments], newDepartment);
-
-        departments = newArr;
-        
-        numberOfDepartments++;
-    }
-
-    void delete_department(char* elementToDelete)
-    {
-        int indexToDelete = -1;
-        for (int index=0; index < numberOfDepartments; index++)
-            if(strcmp(departments[index], elementToDelete) == 0 )
-            {
-                indexToDelete = index;
-                break;
-            }
-        
-        if(indexToDelete == -1)
-            {
-                g<< "Element not found in departments."<<endl;
-            }
-            else {
-            delete[] departments[indexToDelete];
-            for (int index = indexToDelete; index<numberOfDepartments; index++)
-                departments[index] = departments[index+1];
-
-            char** newArr = new char*[numberOfDepartments-1];
-            for (int index=0; index < numberOfDepartments-1; index++)
-            {
-                int length = strlen(departments[index]);
-                newArr[index] = new char[length+1];
-                strcpy(newArr[index], departments[index]);
-            }
-            
-            departments = newArr;
-            numberOfDepartments--;
-            
-        }
-    }
-
-    char** get_pointer_to_departments() {
-        return departments;
-    }
-
-
-    friend ostream & operator<< (ostream &os, const Departments &Array)
-    {
-            for(int index = 0; index < Array.numberOfDepartments; index++)
-                os << Array.departments[index] << endl;
-
-        return os;
-    }
-   
-
-    ~Departments()
-    {
-        if (departments!=nullptr)
-        {
-            for (int index = 0 ;index < numberOfDepartments ; index++)
-                delete[] departments[index];
-            delete[] departments;
-        }
-       
     }
 
 };
@@ -203,294 +76,31 @@ class Birthday
     }
 };
 
-
-
-class Vets {
-
-    char** vets;
-    unsigned int numberOfVets;
-    char departmentForVet[50][100];
-    Birthday birthForVet[50];
-    unsigned int netSalary[50];
-
-    public:
-    Vets()
-    {
-        vets = nullptr;
-        numberOfVets = 0;
-        
-    }
-
-      friend ostream & operator<< (ostream &os, const Vets &Array)
-    {
-            for(int index = 0; index < Array.numberOfVets; index++)
-                os << Array.vets[index] << endl;
-
-        return os;
-    }
-
-    unsigned int get_number_of_vets()
-    {
-        return numberOfVets;
-    }
-
-    void set_birthday_for_vet (char vetFullName[], Birthday birth)
-    {
-        bool validName = 0;
-        unsigned int saveIndex = -1;
-        for (int index = 0; index < numberOfVets; index++)
-        {
-            if (strcmp(vetFullName, vets[index]) == 0)
-            {
-                validName = 1;
-                saveIndex = index;
-            }
-        }
-
-        if (saveIndex != -1)
-        {
-            birthForVet[saveIndex] = birth;
-        } 
-        else g<<"Invalid vet";
-    }
-
-    Birthday get_birthday_for_vet(char vetFullName[]) {
-        bool validName = 0;
-        unsigned int saveIndex = -1;
-
-        for (int index = 0; index < numberOfVets; index++)
-        {
-            if (strcmp(vetFullName, vets[index]) == 0)
-            {
-                validName = 1;
-                saveIndex = index;
-            }
-        }
-
-         if (saveIndex != -1)
-        {
-            return birthForVet[saveIndex];
-        } 
-    }
-
-    void delete_vet(char vetFullName[])
-    {
-        int saveIndex = -1;
-        for(int index = 0; index < numberOfVets; index++)
-        {
-            if(strcmp(vetFullName, vets[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-         }
-
-        if (saveIndex != -1)
-        {
-            delete[] vets[saveIndex];
-
-            for(int index = saveIndex; index < numberOfVets - 1; index++)
-                vets[index] = vets[index+1];
-
-            for(int index = saveIndex; index < numberOfVets - 1; index++)
-                strcpy(departmentForVet[index], departmentForVet[index+1]);
-                
-            for(int index = saveIndex; index < numberOfVets - 1; index++)
-                birthForVet[index] = birthForVet[index+1];
-
-            --numberOfVets;
-        }
-        else g<<"Invalid vet";
-    }
-
-    void set_new_vet(const char* newVet)
-    {
-        char** newArr = new char*[numberOfVets + 1];
-        memcpy(newArr, vets, numberOfVets * sizeof(char*));
-        newArr[numberOfVets] = new char[strlen(newVet)+1];
-        strcpy(newArr[numberOfVets], newVet);
-
-        vets = newArr;
-        
-        numberOfVets++;
-    }
-
-       void set_department_for_vet(char vetFullName[], char departmentName[], char** validDepartments, unsigned int numberOfValidDepartments)
-    {
-        int saveIndex = -1;
-        bool validDepartment = 0;
-
-        for(int index = 0; index < numberOfValidDepartments; index++)
-        {
-            if (strcmp(departmentName, validDepartments[index]) == 0)
-               { 
-                validDepartment = 1;
-                break;
-               }
-        }
-
-        if (validDepartment == 0)
-            g << "Invalid department";
-        else {
-
-            for (int index = 0 ; index < numberOfVets; index++)
-            if(strcmp(vetFullName, vets[index]) == 0)
-            {
-                saveIndex = index;
-            }
-
-            if (saveIndex != -1)
-            {
-                strcpy(departmentForVet[saveIndex], departmentName);
-            }
-            else g<<"Invalid vet";
-
-        }
-    }
-
-    char* get_department_for_vet(char vetFullName[])
-    {
-        for(int index = 0; index < numberOfVets; index++)
-        {
-            if (strcmp(vets[index], vetFullName)==0)
-                return departmentForVet[index];
-        }
-        return "Invalid vet";
-    }
-
-    void set_netSalary(char vetFullName[], unsigned int salary)
-    {
-        int saveIndex = -1;
-        for(int index = 0; index < numberOfVets; index++)
-        {
-            if(strcmp(vetFullName, vets[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-         }
-
-        if (saveIndex != -1)
-        {
-            if (salary < 3000)
-                g<<"Invalid salary value. Must be over 3000";
-            else
-            {
-                netSalary[saveIndex] = salary;
-            }
-        }
-        else g<<"Invalid vet";
-    }
-
-    unsigned int get_netSalary(char vetFullName[])
-    {
-        int saveIndex = -1;
-        for(int index = 0; index < numberOfVets; index++)
-        {
-            if(strcmp(vetFullName, vets[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-         }
-
-        if (saveIndex != -1)
-        {
-            return netSalary[saveIndex];
-        }
-        return -1;
-    }
-
-    float get_hourly_salary(char vetFullName[])
-    {
-        int saveIndex = -1;
-        for(int index = 0; index < numberOfVets; index++)
-        {
-            if(strcmp(vetFullName, vets[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-         }
-
-        if (saveIndex != -1)
-        {
-            return float(netSalary[saveIndex])/160;
-        }
-        else return -1;
-    }
-
-    unsigned int get_anual_salary(char vetFullName[])
-    {
-        int saveIndex = -1;
-        for(int index = 0; index < numberOfVets; index++)
-        {
-            if(strcmp(vetFullName, vets[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-         }
-
-        if (saveIndex != -1)
-        {
-            return netSalary[saveIndex]*12;
-        }
-        else return -1;
-    }
-
-    void get_full_vet_info(char vetFullName[])
-    {
-         int saveIndex = -1;
-        for(int index = 0; index < numberOfVets; index++)
-        {
-            if(strcmp(vetFullName, vets[index]) == 0)
-            {
-                saveIndex = index;
-                break;
-            }
-         }
-
-        if (saveIndex != -1)
-        {
-            g<<vets[saveIndex]<<endl<<departmentForVet[saveIndex]<<endl<<birthForVet[saveIndex]<<netSalary[saveIndex];
-        }
-        else g<<"Invalid vet name";
-    }
-
-    ~Vets()
-    {
-        for (int index = 0; index < numberOfVets; index++)
-            delete[] vets[index];
-        delete[] vets;
-    }
-};
-
-class LoyaltyPoints
+class Person 
 {
-
-    protected:
-    virtual float calculate_loyalty_points(int price) = 0;
-    
-};
-
-class Discount
-{
-    protected:
-    virtual float calculate_discount(int price);
-    
-    virtual ~Discount() {}
-};
-
-class Client : public Discount, public LoyaltyPoints {
-
+    private:
     string name;
     Birthday birthday;
-    
+
     public:
-    Client(string setName, Birthday setBirthday) : Discount(), LoyaltyPoints()
+    Person()
+    {
+        name = "";
+    }
+
+    Person(string setName, Birthday setBirthday)
     {
         name = setName;
+        birthday = setBirthday;
+    }
+    
+    void set_name(string setName)
+    {
+        name = setName;
+    }
+
+    void set_birthday(Birthday setBirthday)
+    {
         birthday = setBirthday;
     }
 
@@ -498,10 +108,64 @@ class Client : public Discount, public LoyaltyPoints {
     {
         return name;
     }
-
-    string print_birthday()
+    Birthday get_birthday()
     {
-        g<<birthday;
+        return birthday;
+    }
+};
+
+
+class Vets: public Person {
+
+    float salary = 3000;
+
+    void set_salary(float setSalary)
+    {
+        salary = setSalary;
+    }
+
+    float get_salary()
+    {
+        return salary;
+    }
+    
+       
+};
+
+class LoyaltyPoints
+{
+    protected:
+    virtual float calculate_loyalty_points(int price) = 0;
+
+    virtual ~LoyaltyPoints() {}
+};
+
+class Discount
+{
+    protected:
+    virtual float calculate_discount(int price) = 0;
+    
+    virtual ~Discount() {}
+};
+
+
+class Client : public Person, public Discount, public LoyaltyPoints {
+
+    private:
+    string telNumber;
+    public:
+    Client() : Person()
+    {
+        telNumber = "";
+    }
+    Client(string setName, Birthday setBirthday, string setTelNumber) : Person(setName, setBirthday), Discount(), LoyaltyPoints()
+    {
+       telNumber = setTelNumber;
+    }
+
+    string get_tel_no()
+    {
+        return telNumber;
     }
 
     float calculate_loyalty_points(int price)
@@ -516,26 +180,18 @@ class Client : public Discount, public LoyaltyPoints {
 
 };
 
-class PremiumClient : public Discount, public LoyaltyPoints {
+class PremiumClient : public Client {
 
     string name;
     Birthday birthday;
+    string telNumber;
     
     public:
-    PremiumClient(string setName, Birthday setBirthday) : Discount(), LoyaltyPoints()
+    PremiumClient(string setName, Birthday setBirthday, string setTelNum) : Client(setName, setBirthday, setTelNum)
     {
         name = setName;
         birthday = setBirthday;
-    }
-
-    string get_name()
-    {
-        return name;
-    }
-
-    string print_birthday()
-    {
-        g<<birthday;
+        telNumber = setTelNum;
     }
 
     float calculate_discount(int price)
@@ -545,7 +201,7 @@ class PremiumClient : public Discount, public LoyaltyPoints {
 
     float calculate_loyalty_points(int price)
     {
-        return 0.15 * price;
+        return 0.25 * price;
     }
 
 };
@@ -553,11 +209,11 @@ class PremiumClient : public Discount, public LoyaltyPoints {
 
 
 
-class CustomException : public exception {
+class CustomExceptionName : public exception {
 public:
    
     const char* what() const throw() {
-        return "You shouldn't reset a property, it could lead to unwanted bugs!";
+        return "A name should be at least 3 characters long!";
     }
 
 };
@@ -568,23 +224,23 @@ class Pet {
     protected:
 
     string name;
-    string owner;
     unsigned int age;
+
+    private:
     static int numOfPets;
 
     public:
     Pet()
     {
         age = 0;
+        numOfPets++;
         name = nullptr;
-        owner = "";
     }
 
-    Pet(string setName, string setOwner, unsigned int setAge)
+    Pet(string setName, unsigned int setAge)
     {
         numOfPets++;
         name = setName;
-        owner = setOwner;
         age = setAge;
     }
 
@@ -598,23 +254,15 @@ class Pet {
         return name;
     }
 
-    string get_owner() const
-    {
-        return owner;
-    }
 
     void set_name(const char* setName)
     {
-        try
-        {
            name = setName;
-           throw CustomException();
-        }
-        catch(const CustomException& e)
-        {
-            std::cerr << e.what() << '\n';
-        }
-        
+    }
+
+    void set_age(unsigned int setAge)
+    {
+        age = setAge;
     }
 
     static int get_num_pets()
@@ -622,13 +270,7 @@ class Pet {
         return numOfPets;
     }
 
-     virtual void print_info() const
-    {
-        g << "Pet Information:" << endl;
-        g << "Name: " << name << endl;
-        g << "Owner: " << owner << endl;
-        g << "Age: " << age << endl;
-    }
+    virtual void print_info() = 0;
 
     virtual ~Pet()
     {
@@ -642,6 +284,7 @@ class Pet {
 class Dog : public Pet {
 
     private:
+    string food;
     string breed;
     string species;
 
@@ -652,7 +295,7 @@ class Dog : public Pet {
         species = "";
     }
 
-    Dog(const char* setName, string setOwner, unsigned int setAge, string setBreed) : Pet(setName, setOwner, setAge)
+    Dog(const char* setName, unsigned int setAge, string setBreed) : Pet(setName, setAge)
     {
         breed = setBreed;
         species = "Dog";
@@ -668,11 +311,10 @@ class Dog : public Pet {
         return species;
     }
 
-    void print_info() const override
+    void print_info()  
     {
         g << "Dog Information:" << endl;
         g << "Name: " << name << endl;
-        g << "Owner: " << owner << endl;
         g << "Age: " << age << endl;
         g << "Breed: " << breed << endl;
     }
@@ -681,27 +323,56 @@ class Dog : public Pet {
 
 };
 
+class Cat : public Pet {
+
+    private:
+    string breed;
+    string species;
+    string food;
+
+    public:
+    Cat() : Pet()
+    {
+        breed = "";
+        species = "";
+    }
+
+    Cat(const char* setName, unsigned int setAge, string setBreed) : Pet(setName, setAge)
+    {
+        breed = setBreed;
+        species = "Cat";
+    }
+
+    string get_breed()
+    {
+        return breed;
+    }
+
+    string get_species()
+    {
+        return species;
+    }
+
+    void print_info()  
+    {
+        g << "Cat Information:" << endl;
+        g << "Name: " << name << endl;
+        g << "Age: " << age << endl;
+        g << "Breed: " << breed << endl;
+    }
+
+};
+
 int Pet::numOfPets = 0;
 
 int main()
 {
 
-    Pet* pet = new Dog("Dorel", "Teo", 3, "Goldie");
-    pet->print_info();
-    g<<Pet::get_num_pets<<endl;
-    delete pet;
-    g<<Pet::get_num_pets<<endl;
+   Dog dogs[10];
+   dogs[0].set_name("Charlie");
+   dogs[0].set_age(3);
 
-
-    Dog d();
-
-    Pet p("Costinel", "Teo", 3);
-   
-    g<<p.get_age()<<endl;
-
-    Client c("Sorin", Birthday (1, 12, 1990));
-
-    g<<c.calculate_discount(100);
+   Client clients[10];
 
 
     return 0;

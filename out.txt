@@ -1,9 +1,0 @@
-Dog Information:
-Name: Dorel
-Owner: Teo
-Age: 3
-Breed: Goldie
-1
-1
-3
-85
